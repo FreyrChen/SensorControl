@@ -1,0 +1,106 @@
+package com.sensorcontrol.base;
+
+import android.app.Activity;
+import android.os.Bundle;
+import android.support.annotation.LayoutRes;
+import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
+import android.view.View;
+
+import com.sensorcontrol.R;
+import com.sensorcontrol.app.App;
+
+import butterknife.ButterKnife;
+import butterknife.Unbinder;
+
+/**
+ * Created by Administrator on 2017/8/18 0018.
+ */
+
+public abstract class BaseActivity extends AppCompatActivity {
+
+    protected Activity mActivity;
+    protected final String TAG = this.getClass().getSimpleName();
+    private Unbinder mUnbinder;
+
+
+    private ActionBarDrawerToggle actionBarDrawerToggle;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        mActivity = this;
+        setContentView(setLayout());
+        mUnbinder = ButterKnife.bind(mActivity);
+        App.getInstance().addActivity(this);
+        init();
+//        initFragment(savedInstanceState);
+        setData();
+    }
+
+
+    @LayoutRes
+    protected abstract int setLayout();
+
+    protected abstract void init();
+
+    protected abstract void setData();
+
+    protected void initFragment(Bundle savedInstanceState){
+
+    }
+
+
+    /**
+     * 防止快速点击
+     *
+     * @return
+     */
+    private boolean fastClick() {
+        long lastClick = 0;
+        if (System.currentTimeMillis() - lastClick <= 1000) {
+            return false;
+        }
+        lastClick = System.currentTimeMillis();
+        return true;
+
+    }
+
+
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        App.getInstance().removeActivity(this);
+        mUnbinder.unbind();
+    }
+
+    protected void initToolbar(Toolbar toolbar) {
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        toolbar.setNavigationIcon(R.drawable.back);
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
+    }
+
+    /**
+     * 检测view是否显示
+     * @param view
+     * @return
+     */
+    protected boolean isShow(View view){
+        if (view.getVisibility() == View.VISIBLE){
+            return true;
+        }else {
+            return false;
+        }
+    }
+
+
+
+}

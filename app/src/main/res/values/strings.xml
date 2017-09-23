@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">传感器控制仪</string>
+    <string name="user">用户校准</string>
+    <string name="show">显示</string>
+    <string name="input_prefill">AT+</string>
+    <string name="input_hint">请输入蓝牙AT指令</string>
+    <string name="Error">搜索失败</string>
+    <string name="Complete">搜索完成</string>
+    <string name="Upload">搜索设配</string>
+</resources>
