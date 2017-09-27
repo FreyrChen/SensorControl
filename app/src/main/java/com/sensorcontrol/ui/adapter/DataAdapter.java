@@ -9,7 +9,9 @@ import android.widget.TextView;
 import com.inuker.bluetooth.library.utils.ByteUtils;
 import com.sensorcontrol.R;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import butterknife.BindView;
@@ -35,9 +37,12 @@ public class DataAdapter extends BaseAdapter {
         notifyDataSetChanged();
     }
 
-    public void addItem(byte[] s) {
+    public void addItem(String s) {
         if (s != null) {
-            mList.add(0, "收到信息: " + new String(s));
+            SimpleDateFormat formatter = new SimpleDateFormat("yyyy年MM月dd日 HH:mm:ss ");
+            Date curDate = new Date(System.currentTimeMillis());//获取当前时间
+            String str = formatter.format(curDate);
+            mList.add(0, str +"\n" + new String(s));
             notifyDataSetChanged();
         }
     }

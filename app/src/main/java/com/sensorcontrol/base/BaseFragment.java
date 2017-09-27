@@ -1,6 +1,8 @@
 package com.sensorcontrol.base;
 
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.annotation.LayoutRes;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -8,6 +10,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+
+import com.sensorcontrol.controller.BluetoothController;
+import com.sensorcontrol.module.BluetoothModule;
+
+import org.greenrobot.eventbus.EventBus;
+
+import java.lang.ref.WeakReference;
 
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
@@ -19,7 +28,7 @@ import butterknife.Unbinder;
  * 类介绍：fragment基类
  */
 
-public abstract class BaseFrament extends Fragment{
+public abstract class BaseFragment extends Fragment{
 
     // 标识fragment视图已经初始化完毕
     private boolean isViewPrepared;
@@ -31,6 +40,8 @@ public abstract class BaseFrament extends Fragment{
     private Unbinder mUnbinder;
 
     protected Bundle savedInstanceState;
+
+    protected BluetoothController mController;
 
     @LayoutRes
     protected abstract int setLayout();
@@ -46,9 +57,18 @@ public abstract class BaseFrament extends Fragment{
         mRootView = inflater.inflate(setLayout(),container,false);
         mUnbinder = ButterKnife.bind(this,mRootView);
         this.savedInstanceState = savedInstanceState;
+        initController();
         init();
         return mRootView;
 
+    }
+
+    private void initController(){
+        mController = new BluetoothController.Builder()
+                .setmActivity(getActivity())
+                .setmBluetoothModule(BluetoothModule.getBluetoothModule())
+                .setmHandler(new MyHandler(this))
+                .build();
     }
 
     private void lazyFetchDataIfPrepared() {
@@ -79,5 +99,33 @@ public abstract class BaseFrament extends Fragment{
         hasFetchData = false;
         isViewPrepared = false;
         mUnbinder.unbind();
+
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+    }
+
+    public class MyHandler extends Handler {
+
+        private WeakReference<Fragment> mFragment;
+        public MyHandler(Fragment fragment) {
+            mFragment = new WeakReference<Fragment>(fragment);
+        }
+
+        @Override
+        public void handleMessage(Message msg) {
+            Fragment fragment = mFragment.get();
+            if (fragment == null) {
+                return;
+            }
+            handleMessage1(msg);
+        }
+
+    }
+
+    protected void handleMessage1(Message msg){
+
     }
 }

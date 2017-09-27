@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <LinearLayout
+        android:id="@+id/ll_no"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:padding="10dp"
+        >
+        <TextView
+            android:id="@+id/tv_cmd"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="命令名字"
+            android:textSize="14dp"
+            android:textColor="#333333"
+            />
+        <android.support.v7.widget.AppCompatSeekBar
+            android:id="@+id/appCompatSeekBar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="5dp"
+            android:max="1024"
+            android:maxHeight="5dp"
+            />
+    </LinearLayout>
+    <TextView
+        android:id="@+id/add_item"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="添加"
+        android:gravity="center"
+        android:padding="5dp"
+        android:textColor="#333333"
+        android:textSize="16sp"
+        />
+</LinearLayout>

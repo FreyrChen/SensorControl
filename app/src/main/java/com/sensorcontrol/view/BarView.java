@@ -4,10 +4,13 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.RectF;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
+
+import com.sensorcontrol.R;
 import com.sensorcontrol.bean.ATBean;
 
 /**
@@ -59,6 +62,7 @@ public class BarView extends View{
         drawX(canvas);
         drawY(canvas);
         drawText(canvas);
+        drawinitBar(canvas);
         drawBar(canvas);
     }
 
@@ -80,10 +84,29 @@ public class BarView extends View{
         }
     }
 
+    private void drawinitBar(Canvas canvas){
+        Paint paint = new Paint();
+        paint.setAntiAlias(true);
+        paint.setStyle(Paint.Style.FILL);
+        paint.setColor(getResources().getColor(R.color.device_detail_service));
+        int k = 0;
+        for (int i = 0; i < 3; i++) {
+                if (i == 0) {
+                    RectF r = new RectF(X / 3 + k - 14, height - 20 - Y, X / 3 + k + 21, height - 20);
+                    canvas.drawRoundRect(r,3,3,paint);
+                    k = X / 3 + k - 14;
+                } else {
+                    k = k + 80;
+                    RectF r = new RectF(k, height - 20 - Y, k + 35, height - 20);
+                    canvas.drawRoundRect(r,3,3,paint);
+                }
+        }
+    }
+
     private void drawBar(Canvas canvas) {
         paintBiao = new Paint();
         paintBiao.setAntiAlias(true);
-        paintBiao.setColor(Color.BLUE);
+        paintBiao.setColor(getResources().getColor(R.color.guangzhu));
         paintBiao.setStyle(Paint.Style.FILL);
         paintText = new Paint();
         paintText.setColor(Color.RED);
@@ -98,16 +121,16 @@ public class BarView extends View{
             if (num > 1024){
                 num = Y;
             }
-            if (data.getNum()[i] > 0) {
-                if (i == 0) {
-                    canvas.drawText(String.valueOf(data.getNum()[i]), X / 3 + k - 14, height - 20 - num - 10, paintText);
-                    canvas.drawRect(X / 3 + k - 14, height - 20 - num, X / 3 + k + 6, height - 20, paintBiao);
-                    k = X / 3 + k - 14;
-                } else {
-                    k = k + 80;
-                    canvas.drawText(String.valueOf(data.getNum()[i]), k, height - 20 - num - 10, paintText);
-                    canvas.drawRect(k, height - 20 - num, k + 20, height - 20, paintBiao);
-                }
+            if (i == 0) {
+                canvas.drawText(String.valueOf(data.getNum()[i]), X / 3 + k - 14, height - 20 - num - 10, paintText);
+                RectF r = new RectF(X / 3 + k - 14, height - 20 - num, X / 3 + k + 21, height - 20);
+                canvas.drawRoundRect(r,3,3,paintBiao);
+                k = X / 3 + k - 14;
+            } else {
+                k = k + 80;
+                canvas.drawText(String.valueOf(data.getNum()[i]), k, height - 20 - num - 10, paintText);
+                RectF r = new RectF(k, height - 20 - num, k + 35, height - 20);
+                canvas.drawRoundRect(r,3,3,paintBiao);
             }
         }
     }

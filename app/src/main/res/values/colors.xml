@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#3F51B5</color>
-    <color name="colorPrimaryDark">#303F9F</color>
-    <color name="colorAccent">#FF4081</color>
+    <color name="colorPrimary">#2BA9E3</color>
+    <color name="colorPrimaryDark">#2BA9E3</color>
+    <color name="colorAccent">#2BA9E3</color>
     <color name="white">#ffffff</color>
 
     <color name="txtClicked">#13227a</color>
@@ -11,4 +11,5 @@
 
     <color name="device_detail_service">#cccccc</color>
     <color name="device_detail_character">#ffffff</color>
+    <color name="guangzhu">#F2B804</color>
 </resources>

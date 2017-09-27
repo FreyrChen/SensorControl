@@ -6,6 +6,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 import com.sensorcontrol.R;
 import com.sensorcontrol.bean.CmdBean;
@@ -25,10 +26,17 @@ public class BtnAdapter extends RecyclerView.Adapter<BtnAdapter.ViewHolder>{
 
     private OnItemClickListener OnItemClickListener;
     private OnLongClickListener OnLongClickListener;
+    private OnAddItemListener OnAddItemListener;
+    private boolean flag = true;
 
     public BtnAdapter(Context mContext) {
         this.mContext = mContext;
         mList = new ArrayList<>();
+        if (flag){
+            mList.add(null);
+            flag = false;
+        }
+
     }
 
     @Override
@@ -49,12 +57,14 @@ public class BtnAdapter extends RecyclerView.Adapter<BtnAdapter.ViewHolder>{
     }
 
     public void setmList(List<CmdBean> list) {
-        this.mList = list;
+        if (list != null) {
+            this.mList = list;
+        }
         notifyDataSetChanged();
     }
 
-    public void upData(int position,CmdBean cmdBean){
-        mList.add(position,cmdBean);
+    public void upData(CmdBean cmdBean){
+        mList.add(0,cmdBean);
         notifyDataSetChanged();
     }
 
@@ -62,27 +72,42 @@ public class BtnAdapter extends RecyclerView.Adapter<BtnAdapter.ViewHolder>{
     class ViewHolder extends RecyclerView.ViewHolder {
 
         TextView textView;
+        ImageView imageView;
 
         public ViewHolder(View itemView) {
             super(itemView);
             textView = itemView.findViewById(R.id.tv_text);
+            imageView = itemView.findViewById(R.id.add_item);
         }
 
         public void update(final int position){
-            textView.setText(mList.get(position).getName());
-            textView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    OnItemClickListener.onClick(position,mList.get(position));
-                }
-            });
-            textView.setOnLongClickListener(new View.OnLongClickListener() {
-                @Override
-                public boolean onLongClick(View view) {
-                    OnLongClickListener.onLongClick(position,mList);
-                    return true;
-                }
-            });
+            if (mList.get(position) == null) {
+                imageView.setVisibility(View.VISIBLE);
+                textView.setVisibility(View.GONE);
+                imageView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        OnAddItemListener.onAddItem(mList.get(position));
+                    }
+                });
+            }else {
+                imageView.setVisibility(View.GONE);
+                textView.setVisibility(View.VISIBLE);
+                textView.setText(mList.get(position).getName());
+                textView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        OnItemClickListener.onClick(position, mList.get(position));
+                    }
+                });
+                textView.setOnLongClickListener(new View.OnLongClickListener() {
+                    @Override
+                    public boolean onLongClick(View view) {
+                        OnLongClickListener.onLongClick(position, mList);
+                        return true;
+                    }
+                });
+            }
         }
     }
 
@@ -94,11 +119,19 @@ public class BtnAdapter extends RecyclerView.Adapter<BtnAdapter.ViewHolder>{
         OnLongClickListener = onLongClickListener;
     }
 
+    public void setOnAddItemListener(BtnAdapter.OnAddItemListener onAddItemListener) {
+        OnAddItemListener = onAddItemListener;
+    }
+
     public interface OnItemClickListener{
         void onClick(int position,CmdBean cmdBean);
     }
 
     public interface OnLongClickListener{
         void onLongClick(int position,List<CmdBean> mList);
+    }
+
+    public interface OnAddItemListener{
+        void onAddItem(CmdBean cmdBean);
     }
 }

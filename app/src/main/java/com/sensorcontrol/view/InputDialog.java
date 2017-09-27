@@ -3,6 +3,7 @@ package com.sensorcontrol.view;
 import android.content.Context;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import com.sensorcontrol.R;
 
@@ -16,6 +17,8 @@ public class InputDialog extends BaseDialog {
     private OnCancelListener onCancelListener;
 
     private OnConfirmListener onConfirmListener;
+    private EditText edTime;
+    private RelativeLayout relativeLayout;
 
     public InputDialog(Context context) {
         super(context);
@@ -37,9 +40,10 @@ public class InputDialog extends BaseDialog {
         super.init();
         final EditText edName = view.findViewById(R.id.ed_name);
         final EditText edCmd = view.findViewById(R.id.ed_cmd);
-        final EditText edTime = view.findViewById(R.id.ed_time);
+        edTime = view.findViewById(R.id.ed_time);
         final TextView positiveButton = view.findViewById(R.id.positiveButton);
         TextView negativeButton = view.findViewById(R.id.negativeButton);
+        relativeLayout = view.findViewById(R.id.rl_time);
 
         positiveButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -54,6 +58,10 @@ public class InputDialog extends BaseDialog {
                 onConfirmListener.onConfirm(edName.getText().toString().trim(),edCmd.getText().toString().trim(),edTime.getText().toString().trim());
             }
         });
+    }
+
+    public RelativeLayout getRelativeLayout() {
+        return relativeLayout;
     }
 
     public void setOnCancelListener(OnCancelListener onCancelListener) {

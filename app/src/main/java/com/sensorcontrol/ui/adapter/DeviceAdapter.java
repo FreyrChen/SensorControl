@@ -82,8 +82,8 @@ public class DeviceAdapter extends BaseAdapter {
         viewHolder.mac.setText(result.getAddress());
         viewHolder.rssi.setText(String.format("Rssi: %d", result.rssi));
 
-        Beacon beacon = new Beacon(result.scanRecord);
-        viewHolder.adv.setText(beacon.toString());
+//        Beacon beacon = new Beacon(result.scanRecord);
+//        viewHolder.adv.setText(beacon.toString());
 
 
 //        view.setOnClickListener(new View.OnClickListener() {
@@ -110,8 +110,8 @@ public class DeviceAdapter extends BaseAdapter {
         TextView mac;
         @BindView(R.id.rssi)
         TextView rssi;
-        @BindView(R.id.adv)
-        TextView adv;
+//        @BindView(R.id.adv)
+//        TextView adv;
 
         ViewHolder(View view) {
             ButterKnife.bind(this, view);

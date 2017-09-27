@@ -1,6 +1,7 @@
-package com.sensorcontrol.app;
+package com.sensorcontrol.module;
 
 import com.inuker.bluetooth.library.BluetoothClient;
+import com.sensorcontrol.app.App;
 
 /**
  * Created by dingjikerbo on 2016/8/27.
