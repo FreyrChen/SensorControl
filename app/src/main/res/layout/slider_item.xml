@@ -9,19 +9,35 @@
         android:layout_margin="10dp"
         android:padding="10dp"
         >
-        <TextView
-            android:id="@+id/tv_cmd"
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="命令名字"
-            android:textSize="14dp"
-            android:textColor="#333333"
-            />
-        <android.support.v7.widget.AppCompatSeekBar
+            android:orientation="vertical"
+            >
+            <TextView
+                android:id="@+id/tv_cmd"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="命令名字"
+                android:textSize="14dp"
+                android:textColor="#333333"
+                />
+            <TextView
+                android:id="@+id/tv_range"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="10 ~ 12"
+                android:layout_marginTop="10dp"
+                android:textSize="10dp"
+                android:textColor="#666666"
+                />
+        </LinearLayout>
+        <SeekBar
             android:id="@+id/appCompatSeekBar"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="25dp"
             android:layout_marginLeft="5dp"
+            android:layout_gravity="center"
             android:max="1024"
             android:maxHeight="5dp"
             />

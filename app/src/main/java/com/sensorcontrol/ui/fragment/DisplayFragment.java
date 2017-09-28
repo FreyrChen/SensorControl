@@ -8,6 +8,7 @@ import android.support.design.widget.Snackbar;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -214,7 +215,10 @@ public class DisplayFragment extends BaseFragment implements BluetoothModule.Not
         mBtnAdapter.setOnAddItemListener(new BtnAdapter.OnAddItemListener() {
             @Override
             public void onAddItem(CmdBean cmdBean) {
+
                 dialog = new InputDialog(getContext());
+                dialog.show();
+                dialog.getRelativeLayout_rl_range().setVisibility(View.GONE);
                 dialog.setOnCancelListener(new InputDialog.OnCancelListener() {
                     @Override
                     public void onCancel(View view) {
@@ -223,7 +227,7 @@ public class DisplayFragment extends BaseFragment implements BluetoothModule.Not
                 });
                 dialog.setOnConfirmListener(new InputDialog.OnConfirmListener() {
                     @Override
-                    public void onConfirm(String name, String cmd, String time) {
+                    public void onConfirm(String name, String cmd, String time,String min, String max) {
                         if (name == null || name.equals("")) {
                             Snackbar.make(llLayout, "名字为空", Snackbar.LENGTH_SHORT).show();
                             return;
@@ -245,13 +249,16 @@ public class DisplayFragment extends BaseFragment implements BluetoothModule.Not
                                 num = Integer.valueOf(time);
                             }
                             CmdBean bean = new CmdBean(cmd,name,num);
-                            mList.add(0,bean);
-                            mBtnAdapter.notifyDataSetChanged();
-                            SpUtil.putList(getContext(), "btn", mList);
+
+                            mBtnAdapter.upData(bean);
+                            List list = new ArrayList();
+                            list.add(0,bean);
+                            list.addAll(mList);
+                            SpUtil.putList(getContext(), "btn",mBtnAdapter.getmList());
                         }
                     }
                 });
-                dialog.show();
+
             }
         });
 
@@ -269,7 +276,7 @@ public class DisplayFragment extends BaseFragment implements BluetoothModule.Not
                 });
                 aDialog1.setOnConfirmListener(new InputDialog.OnConfirmListener() {
                     @Override
-                    public void onConfirm(String name, String cmd, String time) {
+                    public void onConfirm(String name, String cmd, String time,String min, String max) {
                         if (name == null || name.equals("")) {
                             Snackbar.make(llLayout, "名字为空", Snackbar.LENGTH_SHORT).show();
                             return;
@@ -283,11 +290,25 @@ public class DisplayFragment extends BaseFragment implements BluetoothModule.Not
                         if (name == null && cmd == null) {
                             return;
                         } else {
+                            int xiao;
+                            int da;
+                            if(TextUtils.isEmpty(min)){
+                               xiao = 0;
+                            }else {
+                                xiao = Integer.valueOf(max);
+                            }
+                            if (TextUtils.isEmpty(max)){
+                                da = 1024;
+                            }else {
+                                da = Integer.valueOf(max);
+                            }
+
                             aDialog1.dismiss();
-                            CmdBean bean = new CmdBean(cmd,name,0);
+                            CmdBean bean = new CmdBean(cmd,name,0,xiao,da);
+
+                            mSliderAdapter.upData(bean);
                             mList1.add(0,bean);
-                            mSliderAdapter.notifyDataSetChanged();
-                            SpUtil.putList(getContext(), "slider", mList1);
+                            SpUtil.putList(getContext(), "slider", mSliderAdapter.getmList());
                         }
                     }
                 });
@@ -309,6 +330,55 @@ public class DisplayFragment extends BaseFragment implements BluetoothModule.Not
                                 }
                             }).show();
                 }
+            }
+        });
+
+        mSliderAdapter.setOnLongClickListener(new SliderAdapter.OnLongClickListener() {
+            @Override
+            public void onLongClick(final int position, final List<CmdBean> mList) {
+                final InputDialog aDialog1 = new InputDialog(getContext());
+                aDialog1.show();
+                aDialog1.getRelativeLayout().setVisibility(View.GONE);
+                aDialog1.setOnCancelListener(new InputDialog.OnCancelListener() {
+                    @Override
+                    public void onCancel(View view) {
+                        aDialog1.dismiss();
+                    }
+                });
+                aDialog1.setOnConfirmListener(new InputDialog.OnConfirmListener() {
+                    @Override
+                    public void onConfirm(String name, String cmd, String time,String min, String max) {
+                        if (name == null || name.equals("")) {
+                            Snackbar.make(llLayout, "名字为空", Snackbar.LENGTH_SHORT).show();
+                            return;
+                        }
+
+                        if (cmd == null || cmd.equals("")) {
+                            Snackbar.make(llLayout, "AT命令为空", Snackbar.LENGTH_SHORT).show();
+                            return;
+                        }
+
+                        if (name == null && cmd == null) {
+                            return;
+                        } else {
+                            aDialog1.dismiss();
+                            mList1.get(position).setName(name);
+                            mList1.get(position).setAT(cmd);
+                            if(TextUtils.isEmpty(min)){
+                                mList1.get(position).setMin(0);
+                            }else {
+                                mList1.get(position).setMin(Integer.valueOf(min));
+                            }
+                            if (TextUtils.isEmpty(max)){
+                                mList1.get(position).setMax(1024);
+                            }else {
+                                mList1.get(position).setMin(Integer.valueOf(Integer.valueOf(max)));
+                            }
+                            mSliderAdapter.upItem(mList1);
+                            SpUtil.putList(getContext(), "slider", mSliderAdapter.getmList());
+                        }
+                    }
+                });
             }
         });
 
@@ -434,9 +504,11 @@ public class DisplayFragment extends BaseFragment implements BluetoothModule.Not
     @Override
     public void onLongClick(int position, List<CmdBean> mList) {
         dialog = new InputDialog(getContext());
+        dialog.show();
+        dialog.getRelativeLayout_rl_range().setVisibility(View.GONE);
         dialog.setOnCancelListener(this);
         dialog.setOnConfirmListener(this);
-        dialog.show();
+
         this.position = position;
         this.mList = mList;
     }
@@ -448,7 +520,7 @@ public class DisplayFragment extends BaseFragment implements BluetoothModule.Not
     }
 
     @Override
-    public void onConfirm(String name, String cmd, String time) {
+    public void onConfirm(String name, String cmd, String time,String min, String max) {
         if (name == null || name.equals("")) {
             Snackbar.make(llLayout, "名字为空", Snackbar.LENGTH_SHORT).show();
             return;
@@ -470,8 +542,9 @@ public class DisplayFragment extends BaseFragment implements BluetoothModule.Not
             } else {
                 mList.get(position).setTime(Integer.valueOf(time));
             }
-            SpUtil.putList(getContext(), "btn", mList);
-            mBtnAdapter.setmList(mList);
+            mBtnAdapter.upItem(mList);
+
+            SpUtil.putList(getContext(), "btn", mBtnAdapter.getmList());
         }
     }
 

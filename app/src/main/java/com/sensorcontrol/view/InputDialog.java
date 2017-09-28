@@ -5,7 +5,9 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+
 import com.sensorcontrol.R;
+
 
 /**
  * Created by lizhe on 2017/9/22 0022.
@@ -19,6 +21,7 @@ public class InputDialog extends BaseDialog {
     private OnConfirmListener onConfirmListener;
     private EditText edTime;
     private RelativeLayout relativeLayout;
+    private RelativeLayout relativeLayout_rl_range;
 
     public InputDialog(Context context) {
         super(context);
@@ -41,9 +44,12 @@ public class InputDialog extends BaseDialog {
         final EditText edName = view.findViewById(R.id.ed_name);
         final EditText edCmd = view.findViewById(R.id.ed_cmd);
         edTime = view.findViewById(R.id.ed_time);
+        final EditText edMix = view.findViewById(R.id.ed_mix);
+        final EditText edMin = view.findViewById(R.id.ed_min);
         final TextView positiveButton = view.findViewById(R.id.positiveButton);
         TextView negativeButton = view.findViewById(R.id.negativeButton);
         relativeLayout = view.findViewById(R.id.rl_time);
+        relativeLayout_rl_range = view.findViewById(R.id.rl_range);
 
         positiveButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -55,13 +61,17 @@ public class InputDialog extends BaseDialog {
         negativeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                onConfirmListener.onConfirm(edName.getText().toString().trim(),edCmd.getText().toString().trim(),edTime.getText().toString().trim());
+                onConfirmListener.onConfirm(edName.getText().toString().trim(), edCmd.getText().toString().trim(), edTime.getText().toString().trim(),edMin.getText().toString().trim(),edMix.getText().toString().trim());
             }
         });
     }
 
     public RelativeLayout getRelativeLayout() {
         return relativeLayout;
+    }
+
+    public RelativeLayout getRelativeLayout_rl_range() {
+        return relativeLayout_rl_range;
     }
 
     public void setOnCancelListener(OnCancelListener onCancelListener) {
@@ -77,6 +87,6 @@ public class InputDialog extends BaseDialog {
     }
 
     public interface OnConfirmListener {
-        void onConfirm(String name,String cmd,String time);
+        void onConfirm(String name, String cmd, String time, String min, String max);
     }
 }

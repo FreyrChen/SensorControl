@@ -15,13 +15,40 @@ public class CmdBean implements Serializable{
 
     private int time;
 
+    private int min;
+    private int max;
+
     public CmdBean(String AT, String name,int time) {
         this.AT = AT;
         this.name = name;
         this.time = time;
     }
 
+    public CmdBean(String AT, String name, int time, int min, int max) {
+        this.AT = AT;
+        this.name = name;
+        this.time = time;
+        this.min = min;
+        this.max = max;
+    }
+
     public CmdBean() {
+    }
+
+    public int getMin() {
+        return min;
+    }
+
+    public int getMax() {
+        return max;
+    }
+
+    public void setMin(int min) {
+        this.min = min;
+    }
+
+    public void setMax(int max) {
+        this.max = max;
     }
 
     public String getAT() {

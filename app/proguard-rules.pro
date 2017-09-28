@@ -23,3 +23,29 @@
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
+
+#代码迭代优化的次数，取值范围0~7
+-optimizationpasses 5
+
+-dontpreverify
+
+-dontusemixedcaseclassnames
+
+-verbose
+
+-keepattributes Signature
+
+-keepattributes SourceFile,LineNumberTable
+
+-keep public class * extends android.app.Activity
+-keep public class * extends android.app.Application
+-keep public class * extends android.app.Service
+-keep public class * extends android.content.BroadcastReceiver
+-keep public class * extends android.content.ContentProvider
+-keep public class * extends android.app.backup.BackupAgentHelper
+-keep public class * extends android.preference.Preference
+-keep public class * com.android.vending.licensing.ILicensingSerice
+
+-keep class **.R$*{
+    *;
+}

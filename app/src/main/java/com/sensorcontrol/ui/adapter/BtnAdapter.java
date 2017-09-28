@@ -32,10 +32,7 @@ public class BtnAdapter extends RecyclerView.Adapter<BtnAdapter.ViewHolder>{
     public BtnAdapter(Context mContext) {
         this.mContext = mContext;
         mList = new ArrayList<>();
-        if (flag){
-            mList.add(null);
-            flag = false;
-        }
+        mList.add(null);
 
     }
 
@@ -58,7 +55,9 @@ public class BtnAdapter extends RecyclerView.Adapter<BtnAdapter.ViewHolder>{
 
     public void setmList(List<CmdBean> list) {
         if (list != null) {
-            this.mList = list;
+            this.mList = new ArrayList<>();
+            mList.addAll(list);
+            mList.add(null);
         }
         notifyDataSetChanged();
     }
@@ -68,6 +67,12 @@ public class BtnAdapter extends RecyclerView.Adapter<BtnAdapter.ViewHolder>{
         notifyDataSetChanged();
     }
 
+    public void upItem(List<CmdBean> list){
+        if (list != null) {
+            mList = list;
+        }
+        notifyDataSetChanged();
+    }
 
     class ViewHolder extends RecyclerView.ViewHolder {
 
@@ -109,6 +114,13 @@ public class BtnAdapter extends RecyclerView.Adapter<BtnAdapter.ViewHolder>{
                 });
             }
         }
+    }
+
+    public List<CmdBean> getmList() {
+        List list = new ArrayList();
+        list.addAll(mList);
+        list.remove(list.size() -1);
+        return list;
     }
 
     public void setOnItemClickListener(BtnAdapter.OnItemClickListener onItemClickListener) {

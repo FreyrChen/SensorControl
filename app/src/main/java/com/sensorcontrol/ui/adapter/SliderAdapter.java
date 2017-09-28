@@ -1,6 +1,8 @@
 package com.sensorcontrol.ui.adapter;
 
 import android.content.Context;
+import android.os.Build;
+import android.support.annotation.RequiresApi;
 import android.support.v7.widget.AppCompatSeekBar;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -31,14 +33,12 @@ public class SliderAdapter extends RecyclerView.Adapter<SliderAdapter.ViewHolder
     private boolean flag = true;
     private OnAddItemClickListener OnAddItemClickListener;
     private OnSeekBarChangeListener OnSeekBarChangeListener;
+    private OnLongClickListener OnLongClickListener;
 
     public SliderAdapter(Context mContext) {
         this.mContext = mContext;
         mList = new ArrayList<>();
-        if (flag){
-            mList.add(null);
-            flag = false;
-        }
+        mList.add(null);
     }
 
     @Override
@@ -47,11 +47,18 @@ public class SliderAdapter extends RecyclerView.Adapter<SliderAdapter.ViewHolder
         return new SliderAdapter.ViewHolder(view);
     }
 
+
     @Override
     public void onBindViewHolder(SliderAdapter.ViewHolder holder, int position) {
         holder.update(position);
     }
 
+    public void upItem(List<CmdBean> list){
+        if (list != null) {
+            mList = list;
+        }
+        notifyDataSetChanged();
+    }
 
     @Override
     public int getItemCount() {
@@ -60,7 +67,9 @@ public class SliderAdapter extends RecyclerView.Adapter<SliderAdapter.ViewHolder
 
     public void setmList(List<CmdBean> list) {
         if (list != null) {
-            this.mList = list;
+            this.mList = new ArrayList<>();
+            mList.addAll(list);
+            mList.add(null);
         }
 
         notifyDataSetChanged();
@@ -75,9 +84,10 @@ public class SliderAdapter extends RecyclerView.Adapter<SliderAdapter.ViewHolder
     class ViewHolder extends RecyclerView.ViewHolder {
 
         TextView textView;
-        AppCompatSeekBar seekBar;
+        SeekBar seekBar;
         TextView addItem;
         LinearLayout linearLayout;
+        TextView range;
 
         public ViewHolder(View itemView) {
             super(itemView);
@@ -85,6 +95,7 @@ public class SliderAdapter extends RecyclerView.Adapter<SliderAdapter.ViewHolder
             seekBar = itemView.findViewById(R.id.appCompatSeekBar);
             addItem = itemView.findViewById(R.id.add_item);
             linearLayout = itemView.findViewById(R.id.ll_no);
+            range = itemView.findViewById(R.id.tv_range);
         }
 
         public void update(final int position){
@@ -102,8 +113,17 @@ public class SliderAdapter extends RecyclerView.Adapter<SliderAdapter.ViewHolder
                 if (mList.get(position).getName() == null) {
                     linearLayout.setVisibility(View.GONE);
                 }
+                seekBar.setMax(mList.get(position).getMax());
+                range.setText("范围: "+mList.get(position).getMin()+"  ~  " + mList.get(position).getMax());
                 addItem.setVisibility(View.GONE);
                 textView.setText(mList.get(position).getName());
+                textView.setOnLongClickListener(new View.OnLongClickListener() {
+                    @Override
+                    public boolean onLongClick(View view) {
+                        OnLongClickListener.onLongClick(position,mList);
+                        return true;
+                    }
+                });
                 seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
                     @Override
                     public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
@@ -124,12 +144,27 @@ public class SliderAdapter extends RecyclerView.Adapter<SliderAdapter.ViewHolder
         }
     }
 
+    public List<CmdBean> getmList() {
+        List list = new ArrayList();
+        list.addAll(mList);
+        list.remove(list.size() -1);
+        return list;
+    }
+
+    public void setOnLongClickListener(SliderAdapter.OnLongClickListener onLongClickListener) {
+        OnLongClickListener = onLongClickListener;
+    }
+
     public void setOnAddItemClickListener(OnAddItemClickListener onAddItemClickListener) {
         OnAddItemClickListener = onAddItemClickListener;
     }
 
     public void setOnSeekBarChangeListener(OnSeekBarChangeListener onSeekBarChangeListener) {
         OnSeekBarChangeListener = onSeekBarChangeListener;
+    }
+
+    public interface OnLongClickListener{
+        void onLongClick(int position,List<CmdBean> mList);
     }
 
     public interface OnAddItemClickListener{

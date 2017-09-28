@@ -12,6 +12,7 @@ import android.view.View;
 
 import com.sensorcontrol.R;
 import com.sensorcontrol.bean.ATBean;
+import com.sensorcontrol.util.DensityUtils;
 
 /**
  * Created by lizhe on 2017/9/23 0023.
@@ -40,19 +41,19 @@ public class BarView extends View{
 
     public BarView(Context context) {
         super(context);
-        init();
+        init(context);
     }
 
 
 
     public BarView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
-        init();
+        init(context);
     }
 
     public BarView(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        init();
+        init(context);
     }
 
     @Override
@@ -70,36 +71,26 @@ public class BarView extends View{
         Paint paintText = new Paint();
         paintText.setAntiAlias(true);
         paintText.setColor(Color.BLACK);
-        paintText.setTextSize(14);
-        int j = 0;
+        paintText.setTextSize(20);
+        int j = X / 5;
         for (int i = 0; i < 3; i++) {
-            if (i == 0) {
-                canvas.drawText(data.getAT()[i], X /3 + j -14, height, paintText);
-                j = X / 3 + j -14;
-            }else {
-                j = j + 80;
-                canvas.drawText(data.getAT()[i], j, height, paintText);
-
-            }
+            canvas.drawText(data.getAT()[i], j, height, paintText);
+            j = j + juli;
         }
     }
+
+    private int juli;
 
     private void drawinitBar(Canvas canvas){
         Paint paint = new Paint();
         paint.setAntiAlias(true);
         paint.setStyle(Paint.Style.FILL);
         paint.setColor(getResources().getColor(R.color.device_detail_service));
-        int k = 0;
+        int k = X / 5;
         for (int i = 0; i < 3; i++) {
-                if (i == 0) {
-                    RectF r = new RectF(X / 3 + k - 14, height - 20 - Y, X / 3 + k + 21, height - 20);
-                    canvas.drawRoundRect(r,3,3,paint);
-                    k = X / 3 + k - 14;
-                } else {
-                    k = k + 80;
-                    RectF r = new RectF(k, height - 20 - Y, k + 35, height - 20);
-                    canvas.drawRoundRect(r,3,3,paint);
-                }
+            RectF r = new RectF(k, height - 20 - Y, k + 55, height - 20);
+            canvas.drawRoundRect(r,3,3,paint);
+            k = k + juli;
         }
     }
 
@@ -110,8 +101,9 @@ public class BarView extends View{
         paintBiao.setStyle(Paint.Style.FILL);
         paintText = new Paint();
         paintText.setColor(Color.RED);
+        paintText.setTextSize(12);
         paintText.setAntiAlias(true);
-        int k = 0;
+        int k = X / 5;
         float num = 0;
         for (int i = 0; i < 3; i++) {
             num =(data.getNum()[i]*(float)(Y/1024f));
@@ -121,17 +113,10 @@ public class BarView extends View{
             if (num > 1024){
                 num = Y;
             }
-            if (i == 0) {
-                canvas.drawText(String.valueOf(data.getNum()[i]), X / 3 + k - 14, height - 20 - num - 10, paintText);
-                RectF r = new RectF(X / 3 + k - 14, height - 20 - num, X / 3 + k + 21, height - 20);
-                canvas.drawRoundRect(r,3,3,paintBiao);
-                k = X / 3 + k - 14;
-            } else {
-                k = k + 80;
-                canvas.drawText(String.valueOf(data.getNum()[i]), k, height - 20 - num - 10, paintText);
-                RectF r = new RectF(k, height - 20 - num, k + 35, height - 20);
-                canvas.drawRoundRect(r,3,3,paintBiao);
-            }
+            canvas.drawText(String.valueOf(data.getNum()[i]), k, height - 20 - num - 10, paintText);
+            RectF r = new RectF(k, height - 20 - num, k + 35, height - 20);
+            canvas.drawRoundRect(r,3,3,paintBiao);
+            k = k + juli;
         }
     }
 
@@ -152,7 +137,7 @@ public class BarView extends View{
         Paint paintYText1 = new Paint();
         paintYText1.setAntiAlias(true);
         paintYText1.setColor(Color.BLACK);
-        paintYText1.setTextSize(12);
+        paintYText1.setTextSize(18);
         int s = 0;
         for (int i = 0; i < y.length; i++) {
             if (i == 0) {
@@ -178,7 +163,8 @@ public class BarView extends View{
     }
 
 
-    private void init() {
+    private void init(Context context) {
         y = new String[]{"0","250","500","750","1024"};
+        juli = DensityUtils.dip2px(context,50);
     }
 }
