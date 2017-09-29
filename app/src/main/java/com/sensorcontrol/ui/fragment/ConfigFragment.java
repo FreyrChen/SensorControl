@@ -1,7 +1,6 @@
 package com.sensorcontrol.ui.fragment;
 
 import android.app.ProgressDialog;
-import android.graphics.Color;
 import android.os.Message;
 import android.support.design.widget.Snackbar;
 import android.support.v7.widget.Toolbar;
@@ -10,7 +9,6 @@ import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import com.inuker.bluetooth.library.search.SearchResult;
@@ -20,6 +18,7 @@ import com.sensorcontrol.bean.EventBean;
 import com.sensorcontrol.module.BluetoothModule;
 import com.sensorcontrol.ui.activity.MainActivity;
 import com.sensorcontrol.ui.adapter.DeviceAdapter;
+
 import org.greenrobot.eventbus.EventBus;
 import butterknife.BindView;
 import butterknife.OnClick;
@@ -72,7 +71,7 @@ public class ConfigFragment extends BaseFragment {
                 if (mac.equals("")) {
                     mac = mAdapter.getItem(i).getAddress();
                     mController.conn(mac);
-                }else {
+                } else {
                     mController.disconnect(mac);
                     mController.unNotify(mac);
                     mac = mAdapter.getItem(i).getAddress();
@@ -86,11 +85,8 @@ public class ConfigFragment extends BaseFragment {
     public void onViewClicked(View view) {
         switch (view.getId()){
             case R.id.refresh:
-                if (!flag){
-                    mController.search();
-                }else {
-                    mController.stopSearch();
-                }
+                clickAnimation(refresh);
+                mController.search();
                 break;
         }
     }
@@ -98,7 +94,7 @@ public class ConfigFragment extends BaseFragment {
     private void showDialog(){
         pDialog = new ProgressDialog(getContext());
         pDialog.setIndeterminate(true);
-        pDialog.setMessage("正在进行连接.....");
+        pDialog.setMessage("正在进行搜索.....");
         pDialog.show();
     }
 
@@ -108,10 +104,8 @@ public class ConfigFragment extends BaseFragment {
         switch (msg.what){
             case BluetoothModule.SEARCH_STARTED:
                 showDialog();
-                flag = false;
                 break;
             case BluetoothModule.SEARCH_STOPPED:
-                flag = true;
                 pDialog.dismiss();
                 Snackbar.make(mRelativeLayout,"蓝牙搜索中断",Snackbar.LENGTH_SHORT).show();
                 break;
@@ -144,9 +138,11 @@ public class ConfigFragment extends BaseFragment {
                     Snackbar.make(mRelativeLayout, "蓝牙连接成功", Snackbar.LENGTH_SHORT).show();
                     isShow = false;
                 }
-                activity.setShowFragment(MainActivity.HOMEPAGE);
+                if (android.os.Build.VERSION.SDK_INT>21) {
+                    activity.setShowFragment(MainActivity.HOMEPAGE);
+                    activity.setBtn(MainActivity.HOMEPAGE);
+                }
                 EventBus.getDefault().post(new EventBean(mac));
-                activity.setBtn(MainActivity.HOMEPAGE);
                 mController.openNotify(mac);
                 break;
             case BluetoothModule.DEVICE:

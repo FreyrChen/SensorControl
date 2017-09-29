@@ -153,7 +153,8 @@ public class BluetoothModule {
         mClient.notify(mac, service, character, new BleNotifyResponse() {
             @Override
             public void onNotify(UUID service, UUID character, byte[] value) {
-                notifyData1.notifyData(new String(value));
+                String s = new String(value);
+                notifyData1.notifyData(s);
             }
 
             @Override

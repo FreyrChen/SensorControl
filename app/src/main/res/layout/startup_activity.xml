@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    >
+    <ImageView
+        android:id="@+id/logo"
+        android:layout_width="168dp"
+        android:layout_height="168dp"
+        android:src="@mipmap/logo"
+        android:layout_centerInParent="true"
+        />
+    <TextView
+        android:layout_width="260dp"
+        android:layout_height="wrap_content"
+        android:textSize="14dp"
+        android:text="自动控制、智能测控、远程控制设备的开发。"
+        android:textColor="#333333"
+        android:layout_marginTop="23dp"
+        android:layout_below="@+id/logo"
+        android:layout_alignEnd="@+id/textView3" />
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="联系电话：18995692874  ；微信：18995692874"
+        android:textSize="12dp"
+        android:layout_marginBottom="14dp"
+        android:textColor="#999999"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:id="@+id/textView3" />
+</RelativeLayout>

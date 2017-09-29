@@ -1,5 +1,7 @@
 package com.sensorcontrol.base;
 
+import android.animation.AnimatorSet;
+import android.animation.ObjectAnimator;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -9,6 +11,7 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.DecelerateInterpolator;
 
 
 import com.sensorcontrol.controller.BluetoothController;
@@ -126,6 +129,22 @@ public abstract class BaseFragment extends Fragment{
     }
 
     protected void handleMessage1(Message msg){
+
+    }
+
+    /**
+     * 点击动效
+     * @param view
+     */
+    public final void clickAnimation(View view){
+        AnimatorSet animatorSet = new AnimatorSet();//组合动画
+        ObjectAnimator scaleX = ObjectAnimator.ofFloat(view, "scaleX", 1f, 1.2f,1f);
+        ObjectAnimator scaleY = ObjectAnimator.ofFloat(view, "scaleY", 1f, 1.2f,1f);
+
+        animatorSet.setDuration(500);
+        animatorSet.setInterpolator(new DecelerateInterpolator());
+        animatorSet.play(scaleX).with(scaleY);//两个动画同时开始
+        animatorSet.start();
 
     }
 }

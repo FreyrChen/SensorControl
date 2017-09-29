@@ -1,11 +1,17 @@
 package com.sensorcontrol.ui.activity;
 
+import android.Manifest;
+import android.content.pm.PackageManager;
+import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.content.ContextCompat;
 import android.view.View;
 import android.widget.FrameLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -33,12 +39,15 @@ import static android.support.design.widget.Snackbar.LENGTH_SHORT;
 
 public class MainActivity extends BaseActivity {
 
+    private static final int REQUEST_PERMISSION_BT = 11;
     @BindView(R.id.fragment_context)
     FrameLayout fragmentContext;
     @BindView(R.id.home_page)
     TextView homePage;
     @BindView(R.id.pair)
     TextView pair;
+    @BindView(R.id.rl_all)
+    RelativeLayout rl_all;
 
 
     private FragmentManager mFragmentManager;
@@ -160,6 +169,39 @@ public class MainActivity extends BaseActivity {
             timer.schedule(task, 2000);
         } else {
             App.getInstance().exitApp();
+        }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        checkPermission();
+    }
+
+    // onResume 中进行调用
+    private void checkPermission() {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_DENIED) {
+            if (!ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_COARSE_LOCATION)) {
+                Snackbar.make(rl_all,"权限已经被禁用",LENGTH_SHORT).show();
+                return;
+            }
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, REQUEST_PERMISSION_BT);
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        switch (requestCode) {
+            case REQUEST_PERMISSION_BT:
+                if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    Snackbar.make(rl_all,"请求权限成功",LENGTH_SHORT).show();
+                } else {
+                    Snackbar.make(rl_all,"权限已经被禁用",LENGTH_SHORT).show();
+                }
+                break;
+            default:
+                super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         }
     }
 }

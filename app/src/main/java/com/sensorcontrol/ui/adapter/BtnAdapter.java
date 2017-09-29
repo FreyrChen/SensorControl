@@ -6,6 +6,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import com.sensorcontrol.R;
@@ -76,8 +77,8 @@ public class BtnAdapter extends RecyclerView.Adapter<BtnAdapter.ViewHolder>{
 
     class ViewHolder extends RecyclerView.ViewHolder {
 
-        TextView textView;
-        ImageView imageView;
+        Button textView;
+        Button imageView;
 
         public ViewHolder(View itemView) {
             super(itemView);

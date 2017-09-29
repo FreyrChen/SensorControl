@@ -3,26 +3,27 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content">
-        <TextView
+        <Button
             android:id="@+id/tv_text"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="100dp"
+            android:layout_height="70dp"
             android:gravity="center"
             android:layout_marginTop="10dp"
             android:layout_marginLeft="10dp"
-            android:background="@drawable/jpg_btn"
+            android:background="@drawable/btn4_select"
             android:textColor="#ffffff"
             android:text="AT+1"
             android:textSize="14dp" />
-        <ImageView
+        <Button
             android:id="@+id/add_item"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="@drawable/jpg_btn"
-            android:src="@drawable/add12"
+            android:layout_width="100dp"
+            android:layout_height="70dp"
+            android:background="@drawable/btn4_select"
             android:scaleType="center"
             android:layout_marginTop="10dp"
             android:layout_marginLeft="10dp"
             android:visibility="gone"
+            android:textColor="@color/white"
+            android:text="添加"
             />
 </LinearLayout>

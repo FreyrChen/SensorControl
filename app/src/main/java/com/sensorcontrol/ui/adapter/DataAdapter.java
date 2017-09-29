@@ -35,15 +35,18 @@ public class DataAdapter extends BaseAdapter {
     public void setmList(List<String> mList) {
         this.mList = mList;
         notifyDataSetChanged();
+
+
     }
 
     public void addItem(String s) {
         if (s != null) {
-            SimpleDateFormat formatter = new SimpleDateFormat("yyyy年MM月dd日 HH:mm:ss ");
-            Date curDate = new Date(System.currentTimeMillis());//获取当前时间
-            String str = formatter.format(curDate);
-            mList.add(0, str +"\n" + new String(s));
+//            SimpleDateFormat formatter = new SimpleDateFormat("yyyy年MM月dd日 HH:mm:ss ");
+//            Date curDate = new Date(System.currentTimeMillis());//获取当前时间
+//            String str = formatter.format(curDate);
+            mList.add(s);
             notifyDataSetChanged();
+
         }
     }
 

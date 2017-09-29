@@ -1,5 +1,6 @@
 package com.sensorcontrol.ui.fragment;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -15,15 +16,17 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import com.sensorcontrol.R;
 import com.sensorcontrol.base.BaseFragment;
 import com.sensorcontrol.bean.ATBean;
 import com.sensorcontrol.bean.CmdBean;
 import com.sensorcontrol.bean.EventBean;
+import com.sensorcontrol.bean.ListBean;
 import com.sensorcontrol.module.BluetoothModule;
+import com.sensorcontrol.ui.activity.BtnListActivity;
 import com.sensorcontrol.ui.activity.MainActivity;
 import com.sensorcontrol.ui.adapter.BtnAdapter;
+import com.sensorcontrol.ui.adapter.BtnListAdapter;
 import com.sensorcontrol.ui.adapter.DataAdapter;
 import com.sensorcontrol.ui.adapter.SliderAdapter;
 import com.sensorcontrol.util.SpUtil;
@@ -33,7 +36,6 @@ import com.sensorcontrol.view.InputDialog;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import java.util.ArrayList;
-import java.util.IllegalFormatCodePointException;
 import java.util.List;
 import butterknife.BindView;
 
@@ -60,12 +62,11 @@ public class DisplayFragment extends BaseFragment implements BluetoothModule.Not
     @BindView(R.id.recyclerView_slider)
     RecyclerView recyclerViewSlider;
     @BindView(R.id.slider_btn)
-    LinearLayout sliderBtn;
+    ImageView sliderBtn;
+    @BindView(R.id.delete_img)
+    ImageView delete_img;
     @BindView(R.id.ll_layout)
     LinearLayout llLayout;
-    @BindView(R.id.slider_img)
-    ImageView sliderImg;
-
     private boolean isConn = false;
     private String mac;
     private DataAdapter mDataAdapter;
@@ -126,17 +127,58 @@ public class DisplayFragment extends BaseFragment implements BluetoothModule.Not
                     recyclerViewSlider.setVisibility(View.VISIBLE);
                     recyclerView.setVisibility(View.GONE);
                     slider.setText("切换至按钮控制模式");
-                    sliderImg.setImageResource(R.drawable.biao);
+                    sliderBtn.setImageResource(R.drawable.biao);
                     flag = false;
                 } else {
                     recyclerViewSlider.setVisibility(View.GONE);
                     recyclerView.setVisibility(View.VISIBLE);
                     slider.setText("切换至滑动条控制模式");
-                    sliderImg.setImageResource(R.drawable.slider);
+                    sliderBtn.setImageResource(R.drawable.slider);
                     flag = true;
                 }
             }
         });
+        delete_img.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (flag){
+                    Intent intent = new Intent();
+                    intent.putExtra("data",new ListBean(mBtnAdapter.getmList()));
+                    intent.putExtra("type",0);
+                    intent.setClass(getContext(),BtnListActivity.class);
+                    startActivityForResult(intent,0);
+                }else {
+                    Intent intent = new Intent();
+                    intent.putExtra("data",new ListBean(mSliderAdapter.getmList()));
+                    intent.putExtra("type",1);
+                    intent.setClass(getContext(),BtnListActivity.class);
+                    startActivityForResult(intent,1);
+                }
+            }
+        });
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        switch (requestCode){
+            case 0:
+                if (resultCode == BtnListAdapter.BACKDATA){
+                    ListBean bean = (ListBean) data.getSerializableExtra("data");
+                    List<CmdBean> list = bean.getList();
+                    mBtnAdapter.setmList(list);
+                    SpUtil.putList(getContext(), "btn",mBtnAdapter.getmList());
+                }
+                break;
+            case 1:
+                if (resultCode == BtnListAdapter.BACKDATA){
+                    ListBean bean = (ListBean) data.getSerializableExtra("data");
+                    List<CmdBean> list = bean.getList();
+                    mSliderAdapter.setmList(list);
+                    SpUtil.putList(getContext(), "slider",mSliderAdapter.getmList());
+                }
+                break;
+        }
     }
 
     private void initSp() {
@@ -295,7 +337,7 @@ public class DisplayFragment extends BaseFragment implements BluetoothModule.Not
                             if(TextUtils.isEmpty(min)){
                                xiao = 0;
                             }else {
-                                xiao = Integer.valueOf(max);
+                                xiao = Integer.valueOf(min);
                             }
                             if (TextUtils.isEmpty(max)){
                                 da = 1024;
@@ -307,7 +349,6 @@ public class DisplayFragment extends BaseFragment implements BluetoothModule.Not
                             CmdBean bean = new CmdBean(cmd,name,0,xiao,da);
 
                             mSliderAdapter.upData(bean);
-                            mList1.add(0,bean);
                             SpUtil.putList(getContext(), "slider", mSliderAdapter.getmList());
                         }
                     }
@@ -372,7 +413,7 @@ public class DisplayFragment extends BaseFragment implements BluetoothModule.Not
                             if (TextUtils.isEmpty(max)){
                                 mList1.get(position).setMax(1024);
                             }else {
-                                mList1.get(position).setMin(Integer.valueOf(Integer.valueOf(max)));
+                                mList1.get(position).setMax(Integer.valueOf(Integer.valueOf(max)));
                             }
                             mSliderAdapter.upItem(mList1);
                             SpUtil.putList(getContext(), "slider", mSliderAdapter.getmList());
@@ -421,6 +462,13 @@ public class DisplayFragment extends BaseFragment implements BluetoothModule.Not
     @Override
     public void notifyData(String data) {
         mDataAdapter.addItem(data);
+        displayData.post(new Runnable() {
+            @Override
+            public void run() {
+                // Select the last row so it will scroll into view...
+                displayData.setSelection(displayData.getCount() - 1);
+            }
+        });
         String zhi = new String(data);
         if (!zhi.equals("")) {
             String[] s = zhi.trim().split("=");
