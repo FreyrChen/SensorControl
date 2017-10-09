@@ -6,6 +6,10 @@ import android.net.wifi.WifiManager;
 import android.support.design.widget.Snackbar;
 import android.view.View;
 
+import com.gizwits.gizwifisdk.api.GizWifiSDK;
+import com.gizwits.gizwifisdk.enumration.GizWifiErrorCode;
+import com.gizwits.gizwifisdk.listener.GizWifiSDKListener;
+
 /**
  * Created by lizhe on 2017/9/28 0028.
  * 目标定在月亮之上，即使失败，也可以落在众星之间。
@@ -17,6 +21,28 @@ public class WifiModule {
     private WifiInfo mWifiInfo;
 
     private WifiManager.WifiLock mWifiLock;
+
+    // 实例化监听器
+   private  GizWifiSDKListener mListener = new GizWifiSDKListener() {
+        // 实现手机号注册用户回调
+        @Override
+        public void didRegisterUser(GizWifiErrorCode result, String uid, String token){
+            if (result == GizWifiErrorCode.GIZ_SDK_SUCCESS) {
+             // 注册成功，处理注册成功的逻辑
+            } else {
+                // 注册失败，处理注册失败的逻辑
+            }
+        }
+
+
+    };
+
+    private void wifiLisenter(){
+        // 注册监听器
+        GizWifiSDK.sharedInstance().setListener(mListener);
+        // 调用SDK的手机号注册接口
+        GizWifiSDK.sharedInstance().userLogin("17688943972", "100122");
+    }
 
     public WifiModule(Context context) {
         //取得WifiManager
@@ -63,25 +89,6 @@ public class WifiModule {
             Snackbar.make(view,"没有获取到WiFi状态",Snackbar.LENGTH_SHORT).show();
         }
     }
-
-    //锁定WifiLock
-    public void acquireWifiLock() {
-        mWifiLock.acquire();
-    }
-
-    //解锁WifiLock
-    public void releaseWifiLock() {
-        //判断时候锁定
-        if (mWifiLock.isHeld()){
-            mWifiLock.acquire();
-        }
-    }
-
-    //创建一个WifiLock
-    public void creatWifiLock() {
-        mWifiLock = mWifiManager.createWifiLock("Test");
-    }
-
 
 
 }
