@@ -114,13 +114,13 @@
                     android:id="@+id/tv_time"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
+                    android:layout_alignParentStart="true"
+                    android:layout_alignParentTop="true"
                     android:gravity="center_vertical"
                     android:inputType="number"
                     android:text="定时时间:"
                     android:textColor="#333333"
-                    android:textSize="14sp"
-                    android:layout_alignParentTop="true"
-                    android:layout_alignParentStart="true" />
+                    android:textSize="14sp" />
 
                 <EditText
                     android:id="@+id/ed_time"
@@ -140,13 +140,14 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
+                    android:layout_marginLeft="5dp"
                     android:layout_toRightOf="@+id/ed_time"
                     android:gravity="center_vertical"
-                    android:layout_marginLeft="5dp"
                     android:inputType="number"
                     android:text="s"
                     android:textSize="12sp" />
             </RelativeLayout>
+
             <RelativeLayout
                 android:id="@+id/rl_range"
                 android:layout_width="match_parent"
@@ -159,13 +160,13 @@
                     android:id="@+id/tv_range"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
+                    android:layout_alignParentStart="true"
+                    android:layout_alignParentTop="true"
                     android:gravity="center_vertical"
                     android:inputType="number"
                     android:text="范围:"
                     android:textColor="#333333"
-                    android:textSize="14sp"
-                    android:layout_alignParentTop="true"
-                    android:layout_alignParentStart="true" />
+                    android:textSize="14sp" />
 
                 <EditText
                     android:id="@+id/ed_min"
@@ -191,6 +192,7 @@
                     android:inputType="number"
                     android:text=" ~ "
                     android:textSize="12sp" />
+
                 <EditText
                     android:id="@+id/ed_mix"
                     android:layout_width="50dp"

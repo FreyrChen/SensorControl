@@ -8,4 +8,25 @@
     <string name="Complete">搜索完成</string>
     <string name="Upload">搜索设配</string>
     <string name="company_introduction">工业设备类： 非标自动化设备整合升级、测控系统研发，普通设备的数字化改造；\n汽车电器类：在线油位、油品质监测系统、电动无级调速直驱轮毂、锂电池大电流自动平衡系统、汽车主动防碰撞系统；\n智慧生活类：高安全性高可靠度电子锁具系统，全向POV彩色显示屏（应用于点对点广告平台或产品虚拟3D展示）；\n产品开发技术合作及售后联系：电话：18995692874、微信18995692874、QQ：1366817670；</string>
+    <string name="login">登录</string>
+    <string name="password_hint">请输入登录密码</string>
+    <string name="name_hint">请输入登录账号</string>
+    <string name="register">注册新用户</string>
+    <string name="forget_password">忘记密码?</string>
+    <string name="name_digits">请输入手机号</string>
+    <string name="getcode">获取验证码</string>
+    <string name="code_hint">请输入手机验证码</string>
+    <string name="register_1">立即注册</string>
+    <string name="toast_name_empet">用户名不能为空</string>
+    <string name="toast_name_wrong">请输入登录账号</string>
+    <string name="toast_psw_empet">密码不能为空</string>
+    <string name="send_successful">手机验证码发送成功</string>
+    <string name="send_failed">手机短信发送失败</string>
+    <string name="toast_code_empet">验证码不能为空</string>
+    <string name="toast_psw_wrong">请输入密码</string>
+    <string name="toast_psw_short">密码不能小于6位</string>
+    <string name="no_getcode">验证码无效</string>
+
+    <string name="getcode_again">重新获取验证码</string>
+    <string name="timer_message">秒后重新获取</string>
 </resources>

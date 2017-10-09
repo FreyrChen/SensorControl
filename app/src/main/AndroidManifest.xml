@@ -39,6 +39,13 @@
         <activity android:name=".ui.activity.MainActivity"
             android:screenOrientation="portrait"
             />
+        <activity android:name=".ui.activity.LoginActivity"
+            android:screenOrientation="portrait"
+            />
+        <activity android:name=".ui.activity.RegisterUserActivity"
+            android:screenOrientation="portrait"
+            />
+
         <service
             android:name="com.inuker.bluetooth.library.BluetoothService" />
 

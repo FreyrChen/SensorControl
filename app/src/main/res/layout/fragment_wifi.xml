@@ -1,7 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:id="@+id/ll_all"
+    android:background="@color/app_bg"
+    >
     <android.support.v7.widget.Toolbar
         android:id="@+id/toolBar"
         android:layout_width="match_parent"
@@ -17,4 +20,100 @@
             android:text="无线网络"
             />
     </android.support.v7.widget.Toolbar>
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="160dp" />
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="请输入Wi-Fi密码，连接您的智能设配"
+        android:textColor="#333333"
+        />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_marginTop="10dp"
+        android:background="@color/white"
+        >
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            >
+            <ImageView
+                android:id="@+id/wifi_logo"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:src="@drawable/wifi_b48"
+                android:scaleType="center"
+                />
+            <EditText
+                android:id="@+id/ed_wifi_name"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_toRightOf="@+id/wifi_logo"
+                android:layout_toLeftOf="@+id/iv_goto"
+                android:background="@null"
+                android:inputType="text"
+                android:gravity="center"
+                android:textColor="#333333"
+                android:textSize="14dp"
+                />
+            <ImageView
+                android:id="@+id/iv_goto"
+                android:layout_alignParentRight="true"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:src="@drawable/goto2"
+                android:scaleType="center"
+                />
+        </RelativeLayout>
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0.5dp"
+            android:background="#333333"
+            />
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            >
+            <ImageView
+                android:id="@+id/iv_pass"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:src="@drawable/pass"
+                android:scaleType="center"
+                />
+            <EditText
+                android:id="@+id/ed_wifi_pass"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_toRightOf="@+id/iv_pass"
+                android:background="@null"
+                android:inputType="textPassword"
+                android:textColor="#333333"
+                android:hint="请输入Wi-Fi密码"
+                android:gravity="center"
+                android:paddingRight="48dp"
+                android:textSize="14dp"
+                />
+        </RelativeLayout>
+    </LinearLayout>
+    <TextView
+        android:id="@+id/goto_btn"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:background="@drawable/goto_btn"
+        android:layout_marginTop="30dp"
+        android:text="下一步"
+        android:gravity="center"
+        android:textColor="@color/white"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        />
 </LinearLayout>

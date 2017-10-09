@@ -12,4 +12,7 @@
     <color name="device_detail_service">#cccccc</color>
     <color name="device_detail_character">#ffffff</color>
     <color name="guangzhu">#F2B804</color>
+    <color name="app_bg">#ececec</color>
+    <color name="text_gray_light">#d0d0d0</color>
+    <color name="black">#333333</color>
 </resources>
