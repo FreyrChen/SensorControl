@@ -38,6 +38,22 @@
             android:layout_gravity="center"
             android:drawableTop="@drawable/btn3_select"
             android:drawablePadding="3dp" />
+        <View
+            android:layout_width="0.5dp"
+            android:layout_height="match_parent"
+            android:background="#cccccc"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp" />
+        <TextView
+            android:id="@+id/wifi"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:text="无线网"
+            android:gravity="center"
+            android:layout_gravity="center"
+            android:drawableTop="@drawable/btn5_select"
+            android:drawablePadding="3dp" />
     </LinearLayout>
     <View
         android:id="@+id/xian"

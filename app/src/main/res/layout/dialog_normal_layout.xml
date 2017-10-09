@@ -124,7 +124,7 @@
 
                 <EditText
                     android:id="@+id/ed_time"
-                    android:layout_width="100dp"
+                    android:layout_width="50dp"
                     android:layout_height="match_parent"
                     android:layout_marginLeft="10dp"
                     android:layout_toRightOf="@+id/tv_time"
@@ -142,8 +142,9 @@
                     android:layout_height="match_parent"
                     android:layout_toRightOf="@+id/ed_time"
                     android:gravity="center_vertical"
+                    android:layout_marginLeft="5dp"
                     android:inputType="number"
-                    android:text="ms"
+                    android:text="s"
                     android:textSize="12sp" />
             </RelativeLayout>
             <RelativeLayout

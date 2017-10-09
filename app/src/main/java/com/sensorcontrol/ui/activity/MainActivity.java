@@ -21,6 +21,7 @@ import com.sensorcontrol.base.BaseActivity;
 import com.sensorcontrol.module.ClientManager;
 import com.sensorcontrol.ui.fragment.ConfigFragment;
 import com.sensorcontrol.ui.fragment.DisplayFragment;
+import com.sensorcontrol.ui.fragment.WifiFragment;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -46,6 +47,8 @@ public class MainActivity extends BaseActivity {
     TextView homePage;
     @BindView(R.id.pair)
     TextView pair;
+    @BindView(R.id.wifi)
+    TextView wifi;
     @BindView(R.id.rl_all)
     RelativeLayout rl_all;
 
@@ -55,7 +58,7 @@ public class MainActivity extends BaseActivity {
     private String showFragmentTag;
     public static final String HOMEPAGE = "homepage";
     public static final String CONFIG = "config";
-
+    public static final String WIFI = "wifi";
     @Override
     protected int setLayout() {
         return R.layout.activity_main;
@@ -72,7 +75,7 @@ public class MainActivity extends BaseActivity {
 
     }
 
-    @OnClick({R.id.home_page, R.id.pair})
+    @OnClick({R.id.home_page, R.id.pair, R.id.wifi})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.home_page:
@@ -84,6 +87,11 @@ public class MainActivity extends BaseActivity {
                 clickAnimation(pair);
                 setBtn(CONFIG);
                 setShowFragment(CONFIG);
+                break;
+            case R.id.wifi:
+                clickAnimation(wifi);
+                setBtn(WIFI);
+                setShowFragment(WIFI);
                 break;
         }
     }
@@ -110,6 +118,9 @@ public class MainActivity extends BaseActivity {
                 case CONFIG:
                     showFragment = new ConfigFragment();
                     break;
+                case WIFI:
+                    showFragment = new WifiFragment();
+                    break;
             }
         }
 
@@ -134,10 +145,17 @@ public class MainActivity extends BaseActivity {
             case HOMEPAGE:
                 homePage.setSelected(true);
                 pair.setSelected(false);
+                wifi.setSelected(false);
                 break;
             case CONFIG:
                 homePage.setSelected(false);
                 pair.setSelected(true);
+                wifi.setSelected(false);
+                break;
+            case WIFI:
+                homePage.setSelected(false);
+                pair.setSelected(false);
+                wifi.setSelected(true);
                 break;
         }
     }

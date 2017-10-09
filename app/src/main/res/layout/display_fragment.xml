@@ -33,7 +33,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="回显数值"
+                android:text="回显"
                 android:textSize="16sp"
                 android:layout_marginLeft="10dp"
                 android:layout_marginTop="10dp"

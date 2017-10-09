@@ -10,15 +10,15 @@
         android:src="@mipmap/logo"
         android:layout_centerInParent="true"
         />
-    <TextView
-        android:layout_width="260dp"
-        android:layout_height="wrap_content"
-        android:textSize="14dp"
-        android:text="自动控制、智能测控、远程控制设备的开发。"
-        android:textColor="#333333"
-        android:layout_marginTop="23dp"
-        android:layout_below="@+id/logo"
-        android:layout_alignEnd="@+id/textView3" />
+    <!--<TextView-->
+        <!--android:layout_width="260dp"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:textSize="14dp"-->
+        <!--android:text="自动控制、智能测控、远程控制设备的开发。"-->
+        <!--android:textColor="#333333"-->
+        <!--android:layout_marginTop="23dp"-->
+        <!--android:layout_below="@+id/logo"-->
+        <!--android:layout_alignEnd="@+id/textView3" />-->
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

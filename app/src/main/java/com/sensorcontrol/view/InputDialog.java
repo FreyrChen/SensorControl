@@ -61,7 +61,7 @@ public class InputDialog extends BaseDialog {
         negativeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                onConfirmListener.onConfirm(edName.getText().toString().trim(), edCmd.getText().toString().trim(), edTime.getText().toString().trim(),edMin.getText().toString().trim(),edMix.getText().toString().trim());
+                onConfirmListener.onConfirm(edName.getText().toString().trim(), edCmd.getText().toString().trim(), edTime.getText().toString().trim()+"000",edMin.getText().toString().trim(),edMix.getText().toString().trim());
             }
         });
     }
