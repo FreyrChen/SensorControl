@@ -4,17 +4,14 @@ import android.app.ProgressDialog;
 import android.net.wifi.ScanResult;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
-import android.support.design.widget.Snackbar;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Toast;
-
 import com.gizwits.gizwifisdk.api.GizWifiDevice;
 import com.gizwits.gizwifisdk.api.GizWifiSDK;
-import com.gizwits.gizwifisdk.enumration.GizUserAccountType;
 import com.gizwits.gizwifisdk.enumration.GizWifiConfigureMode;
 import com.gizwits.gizwifisdk.enumration.GizWifiErrorCode;
 import com.gizwits.gizwifisdk.enumration.GizWifiGAgentType;
@@ -23,9 +20,7 @@ import com.gizwits.gizwifisdk.listener.GizWifiSDKListener;
 import com.sensorcontrol.R;
 import com.sensorcontrol.app.Constants;
 import com.sensorcontrol.base.BaseFragment;
-import com.sensorcontrol.module.WifiModule;
 import com.sensorcontrol.view.ListDialog;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;

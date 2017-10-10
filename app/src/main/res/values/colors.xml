@@ -15,4 +15,9 @@
     <color name="app_bg">#ececec</color>
     <color name="text_gray_light">#d0d0d0</color>
     <color name="black">#333333</color>
+    <color name="line_gray">#c7c7c7</color>
+    <color name="gray">#808080</color>
+    <color name="title_gray">#919191</color>
+    <color name="tomato">#FF6347</color>
+    <color name="yellow">#F8DC26</color>
 </resources>

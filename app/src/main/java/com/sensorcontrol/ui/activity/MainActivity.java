@@ -20,6 +20,7 @@ import com.sensorcontrol.app.App;
 import com.sensorcontrol.base.BaseActivity;
 import com.sensorcontrol.module.ClientManager;
 import com.sensorcontrol.ui.fragment.ConfigFragment;
+import com.sensorcontrol.ui.fragment.DeviceListFragment;
 import com.sensorcontrol.ui.fragment.DisplayFragment;
 import com.sensorcontrol.ui.fragment.WifiFragment;
 
@@ -59,6 +60,7 @@ public class MainActivity extends BaseActivity {
     public static final String HOMEPAGE = "homepage";
     public static final String CONFIG = "config";
     public static final String WIFI = "wifi";
+    public static final String DEVICE = "device";
     @Override
     protected int setLayout() {
         return R.layout.activity_main;
@@ -91,7 +93,7 @@ public class MainActivity extends BaseActivity {
             case R.id.wifi:
                 clickAnimation(wifi);
                 setBtn(WIFI);
-                setShowFragment(WIFI);
+                setShowFragment(DEVICE);
                 break;
         }
     }
@@ -120,6 +122,9 @@ public class MainActivity extends BaseActivity {
                     break;
                 case WIFI:
                     showFragment = new WifiFragment();
+                    break;
+                case DEVICE:
+                    showFragment = new DeviceListFragment();
                     break;
             }
         }

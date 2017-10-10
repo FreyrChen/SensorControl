@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/toolBar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="@color/colorPrimaryDark">
+        <TextView
+            android:id="@+id/toolbar_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:textColor="@color/white"
+            android:textSize="18sp"
+            android:text="设配列表"
+            />
+    </android.support.v7.widget.Toolbar>
+    <com.sensorcontrol.view.VerticalSwipeRefreshLayout
+        android:id="@+id/id_swipe_ly"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:visibility="gone"
+        >
+
+
+        <ScrollView
+            android:id="@+id/llNoDevice"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical" >
+            <include
+                android:id="@+id/icBoundDevices"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                layout="@layout/view_gos_title_listview" />
+
+            <include
+                android:id="@+id/icFoundDevices"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                layout="@layout/view_gos_title_listview" />
+
+            <include
+                android:id="@+id/icOfflineDevices"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                layout="@layout/view_gos_title_listview" />
+            </LinearLayout>
+        </ScrollView>
+    </com.sensorcontrol.view.VerticalSwipeRefreshLayout>
+    <com.sensorcontrol.view.VerticalSwipeRefreshLayout
+        android:id="@+id/id_swipe_ly1"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <ScrollView
+            android:id="@+id/empty_a"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            >
+            <LinearLayout
+                android:id="@+id/add_Devices"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:layout_gravity="center">
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/empty" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="暂无蓝牙设配,点击添加"
+                    android:textColor="#8a8a8a"
+                    android:layout_marginTop="-20dp"
+                    android:textSize="16sp" />
+            </LinearLayout>
+        </ScrollView>
+    </com.sensorcontrol.view.VerticalSwipeRefreshLayout>
+</LinearLayout>
