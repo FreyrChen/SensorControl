@@ -21,6 +21,7 @@ import com.sensorcontrol.base.BaseActivity;
 import com.sensorcontrol.module.ClientManager;
 import com.sensorcontrol.ui.fragment.ConfigFragment;
 import com.sensorcontrol.ui.fragment.DeviceListFragment;
+import com.sensorcontrol.ui.fragment.DeviceListFragmentV2;
 import com.sensorcontrol.ui.fragment.DisplayFragment;
 import com.sensorcontrol.ui.fragment.WifiFragment;
 

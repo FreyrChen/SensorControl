@@ -97,4 +97,5 @@ dependencies {
     compile files('lib/OneShotConfig.jar')
     compile files('lib/simpleconfigwizardlib.jar')
     compile files('lib/zxing.jar')
+    compile 'com.yanzhenjie:permission:1.0.5'
 }

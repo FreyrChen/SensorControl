@@ -201,5 +201,28 @@
     <string name="unbind">未绑定</string>
     <string name="push_type_string">推送功能仅限于企业开发者使用，目前版本暂不支持推送</string>
     <string name="addDeviceTitle">设备</string>
+    <string name="prompt">提示</string>
+    <string name="besure">确认</string>
+    <string name="loadingtext">处理中，请稍等...</string>
+    <string name="AppID_Toast">appid错误</string>
+    <string name="cancel">取消</string>
+    <string name="cancel_besure">确定放弃配置吗？</string>
+    <string name="search_join">搜索并连接设配</string>
+    <string name="configuration_successful">配置成功</string>
+    <string name="searching_device">正在搜索设备...</string>
+    <string name="searched_device">已搜索到设备</string>
+    <string name="trying_join_device">正在尝试与设备连接...</string>
+    <string name="notify">通知</string>
+    <string name="found_many_devices">发现多台设备名，点击选择配置设备</string>
+    <string name="no_devices">暂无设备，请添加</string>
+    <string name="sorry">对不起</string>
+    <string name="verysorry">error2</string>
+    <string name="bound_failed">绑定失败</string>
+    <string name="bound_successful">绑定成功</string>
+    <string name="network_error">网络错误</string>
+    <string name="add_successful">配置成功</string>
+    <string name="not_ticker">Gizwits：您有新设备上线，请注意查看！</string>
+    <string name="not_title">新设备</string>
+    <string name="not_text">，点击可配置此设备！</string>
 
 </resources>

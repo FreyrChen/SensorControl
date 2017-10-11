@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:orientation="vertical" >
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="15dp"
+            android:layout_marginTop="30dp"
+            android:src="@drawable/point_empty" />
+
+        <TextView
+            android:id="@+id/textView1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:text="请输入Wi-Fi密码，连接您的智能设备" />
+
+        <LinearLayout
+            android:id="@+id/llChooseMode"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="20dp"
+            android:orientation="vertical" >
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" >
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="选择模组类型："
+                    android:textColor="@color/colorPrimary" />
+
+                <TextView
+                    android:id="@+id/tvMode"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="TextView"
+                    android:textColor="@color/colorPrimary" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginTop="-3dp"
+                android:background="@color/colorPrimary" >
+            </LinearLayout>
+        </LinearLayout>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_marginBottom="1dp"
+        android:background="@color/white"
+        android:gravity="center"
+        android:orientation="horizontal" >
+
+        <ImageView
+            android:id="@+id/imageView2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="17dp"
+            android:contentDescription="@string/app_name"
+            android:src="@drawable/wifi_b48" />
+
+        <EditText
+            android:id="@+id/etSSID"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_toRightOf="@+id/imgWiFiList"
+            android:layout_toLeftOf="@+id/imageView2"
+            android:background="@null"
+            android:inputType="text"
+            android:gravity="center"
+            android:textColor="#333333"
+            android:textSize="14dp"
+            />
+
+        <ImageView
+            android:id="@+id/imgWiFiList"
+            android:layout_width="32dp"
+            android:layout_height="30dp"
+            android:layout_marginBottom="5dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_marginTop="5dp"
+            android:button="@null"
+            android:contentDescription="@string/app_name"
+            android:paddingBottom="5dp"
+            android:paddingLeft="3dp"
+            android:paddingRight="9dp"
+            android:paddingTop="5dp"
+            android:src="@drawable/goto2" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:background="@color/white"
+        android:gravity="center"
+        android:orientation="horizontal" >
+
+        <ImageView
+            android:id="@+id/imageView3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="20dp"
+            android:contentDescription="@string/app_name"
+            android:src="@drawable/login_password" />
+
+        <EditText
+            android:id="@+id/etPsw"
+            style="@style/EditTextStyle"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_toRightOf="@+id/iv_pass"
+            android:background="@null"
+            android:inputType="textPassword"
+            android:textColor="#333333"
+            android:hint="请输入Wi-Fi密码"
+            android:gravity="center"
+            android:paddingRight="48dp"
+            android:textSize="14dp"
+            />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical" >
+        <TextView
+            android:id="@+id/btnNext"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:background="@drawable/goto_btn"
+            android:layout_marginTop="30dp"
+            android:text="下一步"
+            android:gravity="center"
+            android:textColor="@color/white"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            />
+    </LinearLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" >
+
+    </RelativeLayout>
+
+</LinearLayout>

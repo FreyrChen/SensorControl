@@ -1,9 +1,11 @@
 package com.sensorcontrol.ui.fragment;
 
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.net.wifi.ScanResult;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
+import android.os.Build;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
@@ -20,7 +22,14 @@ import com.gizwits.gizwifisdk.listener.GizWifiSDKListener;
 import com.sensorcontrol.R;
 import com.sensorcontrol.app.Constants;
 import com.sensorcontrol.base.BaseFragment;
+import com.sensorcontrol.bean.WifiBean;
+import com.sensorcontrol.ui.activity.DeviceControlActivity;
+import com.sensorcontrol.ui.activity.MainActivity;
+import com.sensorcontrol.util.ErrorHandleUtil;
 import com.sensorcontrol.view.ListDialog;
+
+import org.greenrobot.eventbus.EventBus;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
@@ -96,7 +105,8 @@ public class WifiFragment extends BaseFragment {
                 }
                 mDevices.add(device);
                 mDevice = device;
-                bindRemoteDevice();
+                boundDevices();
+                subscribeDevices();
                 Log.d("配置成功  ","");
                 dialog.dismiss();
             } else if (result == GIZ_SDK_DEVICE_CONFIG_IS_RUNNING) {
@@ -105,8 +115,9 @@ public class WifiFragment extends BaseFragment {
                 Log.d("正在配置  ","...");
             } else {
                 // 配置失败
-                Toast.makeText(getContext(), "配置失败", Toast.LENGTH_SHORT).show();
+//                Toast.makeText(getContext(), "配置失败", Toast.LENGTH_SHORT).show();
                 Log.d("配置失败  ","...");
+                Toast.makeText(getContext(), ErrorHandleUtil.toastError(result,getContext()), Toast.LENGTH_SHORT).show();
                 dialog.dismiss();
             }
         }
@@ -114,9 +125,10 @@ public class WifiFragment extends BaseFragment {
         @Override
         public void didBindDevice(GizWifiErrorCode result, String did) {
             if (result == GizWifiErrorCode.GIZ_SDK_SUCCESS) {
-                // 绑定成功
+                Toast.makeText(getContext(), "绑定成功", Toast.LENGTH_SHORT).show();
             } else {
                 // 绑定失败
+                Toast.makeText(getContext(), "绑定失败", Toast.LENGTH_SHORT).show();
             }
         }
 
@@ -131,15 +143,6 @@ public class WifiFragment extends BaseFragment {
             mDevices = deviceList;
         }
 
-        @Override
-        public void didUnbindDevice(GizWifiErrorCode result, String did) {
-            if (result == GizWifiErrorCode.GIZ_SDK_SUCCESS) {
-                // 解绑成功
-            } else {
-                // 解绑失败
-            }
-        }
-
 
     };
 
@@ -148,6 +151,10 @@ public class WifiFragment extends BaseFragment {
         public void didSetSubscribe(GizWifiErrorCode result, GizWifiDevice device, boolean isSubscribed) {
             if (result == GizWifiErrorCode.GIZ_SDK_SUCCESS) {
                 // 订阅或解除订阅成功
+//                Intent intent = new Intent(getContext(), DeviceControlActivity.class);
+//                intent.putExtra("GizWifiDevice",mDevice);
+//                startActivity(intent);
+                send(5);
             } else {
                 // 失败
             }
@@ -185,11 +192,13 @@ public class WifiFragment extends BaseFragment {
             if (result == GizWifiErrorCode.GIZ_SDK_SUCCESS) {
                 if (sn == 5) {
                     // 命令序号相符，开灯指令执行成功
+                    Toast.makeText(getContext(), "chenggong", Toast.LENGTH_SHORT).show();
                 } else {
                     // 其他命令的ack或者数据上报
                 }
             } else {
                 // 操作失败
+                Toast.makeText(getContext(), "失败", Toast.LENGTH_SHORT).show();
             }
         }
     };
@@ -277,19 +286,13 @@ public class WifiFragment extends BaseFragment {
     //绑定设配
     private void boundDevices() {
         // 使用缓存的设备列表刷新UI
-        mDevices = GizWifiSDK.sharedInstance().getDeviceList();
         GizWifiSDK.sharedInstance().getBoundDevices(mUid, mTohen);
     }
 
     //订阅设配
     private void subscribeDevices() {
-        GizWifiDevice mDevice = null;
-        for (int i = 0; i < mDevices.size(); i++) {
-            mDevice = mDevices.get(0);
-            mDevice.setListener(mDeviceListener);
-            mDevice.setSubscribe(true);
-            break;
-        }
+        mDevice.setListener(mDeviceListener);
+        mDevice.setSubscribe(true);
     }
 
     private void getHardwareInfo() {

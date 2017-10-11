@@ -1,6 +1,8 @@
 package com.sensorcontrol.ui.fragment;
 
 import android.app.ProgressDialog;
+import android.content.Intent;
+import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -19,7 +21,9 @@ import com.gizwits.gizwifisdk.listener.GizWifiDeviceListener;
 import com.gizwits.gizwifisdk.listener.GizWifiSDKListener;
 import com.sensorcontrol.R;
 import com.sensorcontrol.app.GosDeploy;
+import com.sensorcontrol.app.MessageCenter;
 import com.sensorcontrol.base.BaseFragment;
+import com.sensorcontrol.ui.activity.DeviceControlActivity;
 import com.sensorcontrol.ui.activity.MainActivity;
 import com.sensorcontrol.ui.adapter.DeviceListAdapter;
 import com.sensorcontrol.util.ErrorHandleUtil;
@@ -91,7 +95,12 @@ public class DeviceListFragment extends BaseFragment implements SwipeRefreshLayo
             progressDialog.cancel();
             if (GizWifiErrorCode.GIZ_SDK_SUCCESS == result) {
                 mDevice = device;
-                Toast.makeText(getContext(), "绑定成功", Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(getContext(), DeviceControlActivity.class);
+                Bundle bundle = new Bundle();
+                bundle.putParcelable("GizWifiDevice", mDevice);
+                intent.putExtras(bundle);
+                startActivityForResult(intent,1);
+
             } else {
                 if (device.isBind()) {
                     Toast.makeText(getContext(), ErrorHandleUtil.toastError(result,getContext()), Toast.LENGTH_SHORT).show();
@@ -259,6 +268,7 @@ public class DeviceListFragment extends BaseFragment implements SwipeRefreshLayo
 
     @Override
     protected void init() {
+        MessageCenter.getInstance(getContext());
         gosDeploy = new GosDeploy(getContext());
         setProgressDialog();
         icBoundDevices = mRootView.findViewById(R.id.icBoundDevices);
@@ -297,9 +307,16 @@ public class DeviceListFragment extends BaseFragment implements SwipeRefreshLayo
         if (progressDialog.isShowing()) {
             progressDialog.cancel();
         }
-        deviceslist = GizWifiSDK.sharedInstance().getDeviceList();
+
         initEvent();
+
+    }
+
+    @Override
+    public void onResume() {
+        deviceslist = GizWifiSDK.sharedInstance().getDeviceList();
         updateUI();
+        super.onResume();
     }
 
     private void initEvent() {
@@ -373,6 +390,6 @@ public class DeviceListFragment extends BaseFragment implements SwipeRefreshLayo
 
     @OnClick(R.id.add_Devices)
     public void onViewClicked() {
-        ((MainActivity)(getActivity())).setShowFragment(MainActivity.DEVICE);
+        ((MainActivity)(getActivity())).setShowFragment(MainActivity.WIFI);
     }
 }
