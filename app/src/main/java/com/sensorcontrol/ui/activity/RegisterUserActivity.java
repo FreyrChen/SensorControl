@@ -1,5 +1,7 @@
 package com.sensorcontrol.ui.activity;
 
+import android.app.ProgressDialog;
+import android.content.Intent;
 import android.os.Handler;
 import android.os.Message;
 import android.text.TextUtils;
@@ -61,6 +63,7 @@ public class RegisterUserActivity extends BaseActivity {
     Timer timer;
     //数据变量
     String name, code, psw;
+    private ProgressDialog progressDialog;
 
     private GizWifiSDKListener mListener = new GizWifiSDKListener() {
         /** 手机验证码回调 */
@@ -78,13 +81,29 @@ public class RegisterUserActivity extends BaseActivity {
         @Override
         public void didRegisterUser(GizWifiErrorCode result, String uid,
                                        String token) {
+            progressDialog.cancel();
             if (GizWifiErrorCode.GIZ_SDK_SUCCESS != result) {
                 Toast.makeText(mActivity, "注册失败", Toast.LENGTH_SHORT).show();
             } else {
                 Toast.makeText(mActivity, "注册成功", Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent();
+                intent.putExtra("user",etName.getText().toString().trim());
+                intent.putExtra("pwd",etPsw.getText().toString().trim());
+                setResult(1,intent);
+                finish();
             }
         }
     };
+
+    /**
+     * 设置ProgressDialog
+     */
+    public void setProgressDialog() {
+        progressDialog = new ProgressDialog(this);
+        String loadingText = getString(R.string.loadingtext);
+        progressDialog.setMessage(loadingText);
+        progressDialog.setCanceledOnTouchOutside(false);
+    }
 
     @Override
     protected int setLayout() {
@@ -93,7 +112,7 @@ public class RegisterUserActivity extends BaseActivity {
 
     @Override
     protected void init() {
-
+        setProgressDialog();
     }
 
     @Override
@@ -124,6 +143,7 @@ public class RegisterUserActivity extends BaseActivity {
                 GizWifiSDK.sharedInstance().requestSendPhoneSMSCode(AppSecret,etName.getText().toString().trim());
                 break;
             case R.id.btnRegister:
+                progressDialog.show();
                 name = etName.getText().toString();
                 code = etCode.getText().toString();
                 psw = etPsw.getText().toString();
@@ -186,5 +206,11 @@ public class RegisterUserActivity extends BaseActivity {
                 handler.sendEmptyMessage(TICK_TIME);
             }
         }, 1000, 1000);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        timer.cancel();
     }
 }

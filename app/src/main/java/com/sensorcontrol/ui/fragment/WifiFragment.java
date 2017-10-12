@@ -1,11 +1,9 @@
 package com.sensorcontrol.ui.fragment;
 
 import android.app.ProgressDialog;
-import android.content.Intent;
 import android.net.wifi.ScanResult;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
-import android.os.Build;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
@@ -22,14 +20,8 @@ import com.gizwits.gizwifisdk.listener.GizWifiSDKListener;
 import com.sensorcontrol.R;
 import com.sensorcontrol.app.Constants;
 import com.sensorcontrol.base.BaseFragment;
-import com.sensorcontrol.bean.WifiBean;
-import com.sensorcontrol.ui.activity.DeviceControlActivity;
-import com.sensorcontrol.ui.activity.MainActivity;
 import com.sensorcontrol.util.ErrorHandleUtil;
 import com.sensorcontrol.view.ListDialog;
-
-import org.greenrobot.eventbus.EventBus;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
@@ -65,32 +57,6 @@ public class WifiFragment extends BaseFragment {
     private ListDialog mListDialog;
 
     private GizWifiSDKListener mListener = new GizWifiSDKListener() {
-
-        @Override
-        public void didRegisterUser(GizWifiErrorCode result, String uid, String token) {
-            if (result == GizWifiErrorCode.GIZ_SDK_SUCCESS) {
-                // 登录成功
-                mUid = uid;
-                mTohen = token;
-                Log.d("GizWifiSDK", "____________注册成功" + "__result: " + result);
-            } else {
-                // 登录失败
-                Log.d("GizWifiSDK", "____________注册失败" + "__result: " + result);
-            }
-        }
-
-        @Override
-        public void didUserLogin(GizWifiErrorCode result, String uid, String token) {
-            if (result == GizWifiErrorCode.GIZ_SDK_SUCCESS) {
-                // 登录成功
-                mUid = uid;
-                mTohen = token;
-                Log.d("GizWifiSDK", "____________登录成功" + "__result: " + result);
-            } else {
-                // 登录失败
-                Log.d("GizWifiSDK", "____________登录失败" + "__result: " + result);
-            }
-        }
 
         //等待配置完成或超时，回调配置完成接口
         @Override
@@ -229,7 +195,6 @@ public class WifiFragment extends BaseFragment {
 
         dialog = new ProgressDialog(getContext());
 
-        GizWifiSDK.sharedInstance().userLogin("17688943972","100122");
     }
 
     @Override

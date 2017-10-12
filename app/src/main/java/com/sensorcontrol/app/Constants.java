@@ -15,8 +15,8 @@ public class Constants {
     public static final UUID Characteristic = UUID.fromString("0000FFE1-0000-1000-8000-00805f9b34fb");
     public static final String MAC = "00:15:83:00:46:43";
 
-    public static final String APPID = "12ffab496f5a49faaf25027e940826b2";
-    public static final String AppSecret = "4dac426c29fb48f5889c85defd72c949";
+    public static final String APPID = "87af64c441d148579474c1c5811fa533";
+    public static final String AppSecret = "0d45bd38878e42cfbba31d6605115f48";
     public static final String your_ssid = "4dac426c29fb48f5889c85defd72c949";
     public static final String your_key = "7498a32ccdb84eff81ea84ded2673095";
     public static final String product_secret = "fa3dac009bc04378b5fdd9217f34c16c";

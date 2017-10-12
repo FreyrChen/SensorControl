@@ -52,6 +52,9 @@
         <activity android:name=".ui.activity.DeviceControlActivity"
             android:screenOrientation="portrait"
             />
+        <activity android:name=".ui.activity.wifi.ConfigActivity"
+            android:screenOrientation="portrait"
+            />
     </application>
 
 </manifest>

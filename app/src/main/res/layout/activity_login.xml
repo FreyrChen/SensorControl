@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
+    android:id="@+id/rl_all"
     android:layout_height="match_parent" >
     <android.support.v7.widget.Toolbar
         android:id="@+id/toolBar"
@@ -83,16 +84,16 @@
             android:textSize="14sp" />
     </LinearLayout>
 
-    <TextView
-        android:id="@+id/tvForget"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentRight="true"
-        android:layout_below="@+id/linearLayout2"
-        android:layout_marginRight="15dp"
-        android:layout_marginTop="15dp"
-        android:text="@string/forget_password"
-        android:textColor="@color/black" />
+    <!--<TextView-->
+        <!--android:id="@+id/tvForget"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_alignParentRight="true"-->
+        <!--android:layout_below="@+id/linearLayout2"-->
+        <!--android:layout_marginRight="15dp"-->
+        <!--android:layout_marginTop="15dp"-->
+        <!--android:text="@string/forget_password"-->
+        <!--android:textColor="@color/black" />-->
 
     <TextView
         android:id="@+id/tvRegister"
@@ -109,7 +110,7 @@
         android:id="@+id/btnLogin"
         android:layout_width="match_parent"
         android:layout_height="40dp"
-        android:layout_below="@+id/tvForget"
+        android:layout_below="@+id/tvRegister"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="50dp"
         android:gravity="center"

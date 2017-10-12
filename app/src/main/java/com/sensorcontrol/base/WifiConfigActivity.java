@@ -18,6 +18,7 @@ public abstract class WifiConfigActivity extends WifiBaseActivity{
             WifiConfigActivity.this.didSetDeviceOnboarding(result, mac, did, productKey);
         }
 
+
     };
 
     @Override

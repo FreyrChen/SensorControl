@@ -26,8 +26,8 @@ public class StartupActivity extends AppCompatActivity {
         //取消标题
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         //取消状态栏
-        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
-                WindowManager.LayoutParams.FLAG_FULLSCREEN);
+//        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+//                WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.startup_activity);
         final Activity activity = this;
         handler = new Handler();
@@ -35,7 +35,7 @@ public class StartupActivity extends AppCompatActivity {
             @Override
             public void run() {
                 Intent intent = new Intent();
-                intent.setClass(activity,MainActivity.class);
+                intent.setClass(activity,LoginActivity.class);
                 startActivity(intent);
                 overridePendingTransition(R.anim.open_out, R.anim.open_in);// 淡出淡入动画效果
                 activity.finish();

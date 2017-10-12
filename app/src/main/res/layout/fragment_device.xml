@@ -16,6 +16,15 @@
             android:textSize="18sp"
             android:text="设配列表"
             />
+        <ImageView
+            android:id="@+id/iv_add_Devices"
+            android:layout_width="48dp"
+            android:layout_height="match_parent"
+            android:layout_gravity="right"
+            android:textSize="14sp"
+            android:src="@drawable/add_devices"
+            android:scaleType="center"
+            />
     </android.support.v7.widget.Toolbar>
     <com.sensorcontrol.view.VerticalSwipeRefreshLayout
         android:id="@+id/id_swipe_ly"
