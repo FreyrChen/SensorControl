@@ -2,10 +2,14 @@ package com.sensorcontrol.util;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.nio.ByteBuffer;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
+import java.util.List;
 import java.util.Locale;
 import java.util.Random;
 
@@ -249,4 +253,9 @@ public class StringUtils {
     public static String getNonNullNumString(String text) {
         return text != null ? text : "0";
     }
+
+    public static void subPackageOnce(byte[] b){
+
+    }
+
 }

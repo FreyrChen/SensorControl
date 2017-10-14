@@ -85,7 +85,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="暂无蓝牙设配,点击添加"
+                    android:text="暂无设配,点击配置"
                     android:textColor="#8a8a8a"
                     android:layout_marginTop="-20dp"
                     android:textSize="16sp" />

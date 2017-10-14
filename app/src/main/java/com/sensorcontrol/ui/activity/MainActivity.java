@@ -1,7 +1,6 @@
 package com.sensorcontrol.ui.activity;
 
 import android.Manifest;
-import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
@@ -14,16 +13,12 @@ import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.gizwits.gizwifisdk.api.GizWifiSDK;
 import com.sensorcontrol.R;
-import com.sensorcontrol.app.App;
 import com.sensorcontrol.base.BaseActivity;
 import com.sensorcontrol.module.ClientManager;
 import com.sensorcontrol.ui.fragment.ConfigFragment;
 import com.sensorcontrol.ui.fragment.DeviceListFragment;
-import com.sensorcontrol.ui.fragment.DeviceListFragmentV2;
 import com.sensorcontrol.ui.fragment.DisplayFragment;
 import com.sensorcontrol.ui.fragment.WifiFragment;
 

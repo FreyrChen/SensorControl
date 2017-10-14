@@ -1,6 +1,5 @@
 package com.sensorcontrol.ui.activity.wifi;
 
-import android.app.ProgressDialog;
 import android.net.wifi.ScanResult;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
@@ -19,7 +18,6 @@ import com.gizwits.gizwifisdk.enumration.GizWifiErrorCode;
 import com.gizwits.gizwifisdk.enumration.GizWifiGAgentType;
 import com.sensorcontrol.R;
 import com.sensorcontrol.base.WifiConfigActivity;
-import com.sensorcontrol.bean.WifiBean;
 import com.sensorcontrol.util.ErrorHandleUtil;
 import com.sensorcontrol.view.ListDialog;
 

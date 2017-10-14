@@ -57,6 +57,8 @@ public class LoginActivity extends BaseActivity {
     EditText etPsw;
     @BindView(R.id.linearLayout2)
     LinearLayout linearLayout2;
+    @BindView(R.id.tvSkip)
+    TextView tvtvSkip;
 
     private ProgressDialog progressDialog;
     private GizWifiSDKListener mListener = new GizWifiSDKListener() {
@@ -70,7 +72,7 @@ public class LoginActivity extends BaseActivity {
                 etPsw.setEnabled(true);
             } else {// 登录成功
                 progressDialog.cancel();
-                Toast.makeText(mActivity, "登录成功", Toast.LENGTH_SHORT).show();
+//                Toast.makeText(mActivity, "登录成功", Toast.LENGTH_SHORT).show();
                 if (!TextUtils.isEmpty(etName.getText().toString()) && !TextUtils.isEmpty(etPsw.getText().toString())
                         && TextUtils.isEmpty(SpUtil.getString(getApplicationContext(),"thirdUid", ""))) {
                     SpUtil.putString(getApplicationContext(),"UserName", etName.getText().toString());
@@ -105,6 +107,11 @@ public class LoginActivity extends BaseActivity {
     protected void init() {
         MessageCenter.getInstance(this);
         setProgressDialog();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
         GizWifiSDK.sharedInstance().setListener(mListener);
     }
 
@@ -120,7 +127,7 @@ public class LoginActivity extends BaseActivity {
     }
 
 
-    @OnClick({R.id.tvRegister, R.id.btnLogin})
+    @OnClick({R.id.tvRegister, R.id.btnLogin,R.id.tvSkip})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.tvRegister:
@@ -130,6 +137,10 @@ public class LoginActivity extends BaseActivity {
             case R.id.btnLogin:
                 progressDialog.show();
                 GizWifiSDK.sharedInstance().userLogin(etName.getText().toString().trim(), etPsw.getText().toString().trim());
+                break;
+            case R.id.tvSkip:
+                progressDialog.show();
+                GizWifiSDK.sharedInstance().userLoginAnonymous();
                 break;
         }
     }

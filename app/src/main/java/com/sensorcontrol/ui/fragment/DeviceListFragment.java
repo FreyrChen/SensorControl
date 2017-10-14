@@ -395,4 +395,5 @@ public class DeviceListFragment extends BaseFragment implements SwipeRefreshLayo
         super.onDestroyView();
         EventBus.getDefault().unregister(this);
     }
+
 }

@@ -9,6 +9,8 @@ import com.gizwits.gizwifisdk.api.GizWifiSDK;
 import com.gizwits.gizwifisdk.enumration.GizLogPrintLevel;
 import com.sensorcontrol.R;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class MessageCenter {
@@ -26,7 +28,9 @@ public class MessageCenter {
 	}
 
 	private void init(Context c) {
+
 		gosDeploy = new GosDeploy(c);
+		ConcurrentHashMap<String, String> appInfo = new ConcurrentHashMap();
 		String AppID = GosDeploy.setAppID();
 		String AppSecret = GosDeploy.setAppSecret();
 		if (TextUtils.isEmpty(AppID) || AppID.contains("your_app_id") || TextUtils.isEmpty(AppSecret)
@@ -47,8 +51,17 @@ public class MessageCenter {
 			serverMap.put("pushInfo", (String) GosDeploy.infoMap.get("push_URL"));
 			//GizWifiSDK.sharedInstance().startWithAppID(c, AppID, GosDeploy.setProductKeyList(), serverMap);
 
-			GizWifiSDK.sharedInstance().startWithAppID(c, AppID, AppSecret, GosDeploy.setProductKeyList(), serverMap,
-					false);
+			appInfo.put("appId", GosDeploy.setAppID());
+			appInfo.put("appSecret", GosDeploy.setAppSecret());
+//			GizWifiSDK.sharedInstance().startWithAppID(c, AppID, AppSecret, GosDeploy.setProductKeyList(), serverMap,
+//					false);
+			// 设置要过滤的设备 productKey 列表。不过滤则直接传 null
+			List productInfo = new ArrayList();
+			ConcurrentHashMap<String, Object> product = new ConcurrentHashMap<String, Object>();
+			product.put("productKey", "6631adbb8ef44ad48e3bbe7def28b25c");
+			product.put("productSecret", "39b30282945b442e82ba3643c05382f3");
+			productInfo.add(product);
+			GizWifiSDK.sharedInstance().startWithAppInfo(c,appInfo,productInfo,null,false);
 
 		}
 		hand.sendEmptyMessageDelayed(SETCLOUD, 3000);

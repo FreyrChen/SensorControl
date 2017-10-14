@@ -1,8 +1,11 @@
 package com.sensorcontrol.module;
 
 import android.util.Log;
+import android.widget.Toast;
+
 import com.inuker.bluetooth.library.BluetoothClient;
 import com.inuker.bluetooth.library.connect.listener.BleConnectStatusListener;
+import com.inuker.bluetooth.library.connect.listener.BluetoothStateListener;
 import com.inuker.bluetooth.library.connect.options.BleConnectOptions;
 import com.inuker.bluetooth.library.connect.response.BleConnectResponse;
 import com.inuker.bluetooth.library.connect.response.BleNotifyResponse;
@@ -13,6 +16,8 @@ import com.inuker.bluetooth.library.model.BleGattProfile;
 import com.inuker.bluetooth.library.search.SearchRequest;
 import com.inuker.bluetooth.library.search.SearchResult;
 import com.inuker.bluetooth.library.search.response.SearchResponse;
+import com.sensorcontrol.app.App;
+
 import java.util.UUID;
 import static com.inuker.bluetooth.library.Code.REQUEST_SUCCESS;
 import static com.inuker.bluetooth.library.Constants.STATUS_CONNECTED;
@@ -68,6 +73,7 @@ public class BluetoothModule {
 
     public void search(){
         if (mClient.isBluetoothOpened()){
+            mClient.unregisterBluetoothStateListener(mBluetoothStateListener);
             mClient.search(request, new SearchResponse() {
                 @Override
                 public void onSearchStarted() {
@@ -91,8 +97,20 @@ public class BluetoothModule {
             });
         }else {
             mClient.openBluetooth();
+            mClient.registerBluetoothStateListener(mBluetoothStateListener);
         }
     }
+    private final BluetoothStateListener mBluetoothStateListener = new BluetoothStateListener() {
+        @Override
+        public void onBluetoothStateChanged(boolean openOrClosed) {
+            if (openOrClosed){
+                search();
+            }else {
+
+            }
+        }
+
+    };
 
     public void stopSearch(){
         mClient.stopSearch();

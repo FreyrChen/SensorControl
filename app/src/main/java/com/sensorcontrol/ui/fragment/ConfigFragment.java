@@ -79,6 +79,14 @@ public class ConfigFragment extends BaseFragment {
                 }
             }
         });
+
+        listView.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View view) {
+
+                return true;
+            }
+        });
     }
 
     @OnClick(R.id.refresh)
