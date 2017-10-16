@@ -1,7 +1,10 @@
 package com.sensorcontrol.ui.adapter;
 
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.net.Uri;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,6 +14,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import com.sensorcontrol.R;
 import com.sensorcontrol.bean.CmdBean;
+
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,13 +33,14 @@ public class BtnAdapter extends RecyclerView.Adapter<BtnAdapter.ViewHolder>{
     private OnItemClickListener OnItemClickListener;
     private OnLongClickListener OnLongClickListener;
     private OnAddItemListener OnAddItemListener;
+    private OnSelectFileListener OnSelectFileListener;
     private boolean flag = true;
 
     public BtnAdapter(Context mContext) {
         this.mContext = mContext;
         mList = new ArrayList<>();
         mList.add(null);
-
+        mList.add(null);
     }
 
     @Override
@@ -58,6 +64,7 @@ public class BtnAdapter extends RecyclerView.Adapter<BtnAdapter.ViewHolder>{
         if (list != null) {
             this.mList = new ArrayList<>();
             mList.addAll(list);
+            mList.add(null);
             mList.add(null);
         }
         notifyDataSetChanged();
@@ -87,15 +94,28 @@ public class BtnAdapter extends RecyclerView.Adapter<BtnAdapter.ViewHolder>{
         }
 
         public void update(final int position){
+
             if (mList.get(position) == null) {
-                imageView.setVisibility(View.VISIBLE);
-                textView.setVisibility(View.GONE);
-                imageView.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        OnAddItemListener.onAddItem(mList.get(position));
-                    }
-                });
+                if (mList.size()-1 == position){
+                    imageView.setVisibility(View.GONE);
+                    textView.setVisibility(View.VISIBLE);
+                    textView.setText("发送文件");
+                    textView.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            OnSelectFileListener.onSelectFile();
+                        }
+                    });
+                }else {
+                    imageView.setVisibility(View.VISIBLE);
+                    textView.setVisibility(View.GONE);
+                    imageView.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            OnAddItemListener.onAddItem(mList.get(position));
+                        }
+                    });
+                }
             }else {
                 imageView.setVisibility(View.GONE);
                 textView.setVisibility(View.VISIBLE);
@@ -113,6 +133,7 @@ public class BtnAdapter extends RecyclerView.Adapter<BtnAdapter.ViewHolder>{
                         return true;
                     }
                 });
+
             }
         }
     }
@@ -136,6 +157,10 @@ public class BtnAdapter extends RecyclerView.Adapter<BtnAdapter.ViewHolder>{
         OnAddItemListener = onAddItemListener;
     }
 
+    public void setOnSelectFileListener(BtnAdapter.OnSelectFileListener onSelectFileListener) {
+        OnSelectFileListener = onSelectFileListener;
+    }
+
     public interface OnItemClickListener{
         void onClick(int position,CmdBean cmdBean);
     }
@@ -146,5 +171,9 @@ public class BtnAdapter extends RecyclerView.Adapter<BtnAdapter.ViewHolder>{
 
     public interface OnAddItemListener{
         void onAddItem(CmdBean cmdBean);
+    }
+
+    public interface OnSelectFileListener{
+        void onSelectFile();
     }
 }

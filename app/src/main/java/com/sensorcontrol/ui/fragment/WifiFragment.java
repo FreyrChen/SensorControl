@@ -181,7 +181,8 @@ public class WifiFragment extends BaseFragment {
     @Override
     protected void init() {
         GizWifiSDK.sharedInstance().setListener(mListener);
-        WifiManager wifiManager = (WifiManager) getContext().getSystemService(WIFI_SERVICE);
+
+        WifiManager wifiManager = (WifiManager) getActivity().getApplicationContext().getSystemService(WIFI_SERVICE);
         WifiInfo wifiInfo = wifiManager.getConnectionInfo();
         wifiSSID = wifiInfo.getSSID();
         Log.d("wifi mac: ", wifiSSID);

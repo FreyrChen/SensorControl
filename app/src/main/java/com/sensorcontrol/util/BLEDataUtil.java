@@ -32,7 +32,7 @@ public class BLEDataUtil {
     private static final int INT_NUM = 4;
     /**蓝牙最大发送20个字节，但是首个字节由标志位占用10字节*/
     private static final int MAX_SIZE = 20-HEAD_NUM+INT_NUM;
-    private static final int BLE_DATA = 986;
+    public static final int BLE_DATA = 986;
     /**总包数*/
     private static int num;
     /**最后一个包的余数*/
@@ -73,7 +73,7 @@ public class BLEDataUtil {
      * @param b
      * @return
      */
-    public static byte[][] splitPackage(int m,int yu,byte[] b) {
+    private static byte[][] splitPackage(int m,int yu,byte[] b) {
         m = m + 2;
         byte[][] sendData = new byte[m][];
         byte[] frist = tihuan(intToButeArray(num),START_BYTE,START_BYTE.length,false);
@@ -153,7 +153,7 @@ public class BLEDataUtil {
      * @param override
      * @return
      */
-    public static byte[] tihuan(byte[] newArray, byte[] allArray,int startPos,boolean override){
+    private static byte[] tihuan(byte[] newArray, byte[] allArray,int startPos,boolean override){
 
         if(newArray==null||allArray==null){
             return null;

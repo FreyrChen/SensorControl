@@ -8,8 +8,8 @@ android {
         applicationId "com.sensorcontrol"
         minSdkVersion 19
         targetSdkVersion 26
-        versionCode 1
-        versionName "1.0"
+        versionCode 2
+        versionName "2.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     //签名
@@ -18,7 +18,7 @@ android {
 
         }
         release {// 自己的签名文件
-            storeFile file("doc/sensor.jks")
+            storeFile file("doc/sensorControl.jks")
             storePassword "123456"
             keyAlias "lizhe"
             keyPassword "123456"
@@ -51,6 +51,7 @@ android {
             shrinkResources true
             //前一部分代表系统默认的android程序的混淆文件，该文件已经包含了基本的混淆声明，后一个文件是自己的定义混淆文件
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+
             //签名
             signingConfig signingConfigs.release
 

@@ -57,6 +57,10 @@ public class BluetoothController implements BluetoothModule.BluetoothModuleData 
         bluetoothModule.write(mac,Constants.service,characteristic,msg);
     }
 
+    public void write(String mac,byte[] msg){
+        bluetoothModule.write(mac,Constants.service,characteristic,msg);
+    }
+
     public void openNotify(String mac){
         bluetoothModule.openNotify(mac,service,characteristic);
     }

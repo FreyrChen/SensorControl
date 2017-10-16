@@ -159,6 +159,21 @@ public class BluetoothModule {
         });
     }
 
+    //byte[]不能超过20字节
+    public void write(String mac, UUID service,UUID character,byte[] s){
+        if (s.length > 2)
+            mClient.write(mac, service, character, s, new BleWriteResponse() {
+                @Override
+                public void onResponse(int code) {
+                    if (code == REQUEST_SUCCESS) {
+                        bluetoothModuleData.state(WRITE_SUCCESS);
+                    }else {
+                        bluetoothModuleData.state(WRITE_ERROR);
+                    }
+                }
+            });
+    }
+
     public void readDescriptor(){
 
     }

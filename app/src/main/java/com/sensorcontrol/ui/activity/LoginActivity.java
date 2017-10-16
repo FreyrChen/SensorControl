@@ -139,8 +139,8 @@ public class LoginActivity extends BaseActivity {
                 GizWifiSDK.sharedInstance().userLogin(etName.getText().toString().trim(), etPsw.getText().toString().trim());
                 break;
             case R.id.tvSkip:
-                progressDialog.show();
-                GizWifiSDK.sharedInstance().userLoginAnonymous();
+                Intent intent1 = new Intent(getApplicationContext(), MainActivity.class);
+                startActivity(intent1);
                 break;
         }
     }

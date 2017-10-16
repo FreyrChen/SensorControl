@@ -1,11 +1,16 @@
 package com.sensorcontrol.ui.fragment;
 
+import android.app.Activity;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.support.annotation.BoolRes;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -29,12 +34,16 @@ import com.sensorcontrol.ui.adapter.BtnAdapter;
 import com.sensorcontrol.ui.adapter.BtnListAdapter;
 import com.sensorcontrol.ui.adapter.DataAdapter;
 import com.sensorcontrol.ui.adapter.SliderAdapter;
+import com.sensorcontrol.util.BLEDataUtil;
+import com.sensorcontrol.util.FileUtil;
 import com.sensorcontrol.util.SpUtil;
 import com.sensorcontrol.view.ATDialog;
 import com.sensorcontrol.view.BarView;
 import com.sensorcontrol.view.InputDialog;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
+
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import butterknife.BindView;
@@ -45,7 +54,7 @@ import butterknife.BindView;
  */
 
 public class DisplayFragment extends BaseFragment implements BluetoothModule.NotifyData, BtnAdapter.OnLongClickListener,
-        BtnAdapter.OnItemClickListener, InputDialog.OnCancelListener, InputDialog.OnConfirmListener {
+        BtnAdapter.OnItemClickListener, InputDialog.OnCancelListener, InputDialog.OnConfirmListener ,BtnAdapter.OnSelectFileListener{
 
     @BindView(R.id.toolbar_title)
     TextView toolbarTitle;
@@ -178,6 +187,55 @@ public class DisplayFragment extends BaseFragment implements BluetoothModule.Not
                     SpUtil.putList(getContext(), "slider",mSliderAdapter.getmList());
                 }
                 break;
+            case 99:
+                if (resultCode == Activity.RESULT_OK) {
+                    Uri uri = data.getData();
+                    showNormalDialog(uri);
+                }
+                break;
+        }
+    }
+
+    private void showNormalDialog(final Uri uri){
+        final AlertDialog.Builder normalDialog =
+                new AlertDialog.Builder(getContext());
+        normalDialog.setTitle("发送文件");
+        normalDialog.setMessage("文件路径："+uri.getPath().toString());
+        normalDialog.setPositiveButton("确定",
+                new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        sendFileData(uri);
+                    }
+                });
+        normalDialog.setNegativeButton("关闭",
+                new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                });
+        // 显示
+        normalDialog.show();
+    }
+
+    private Handler handler1 = new Handler(){
+        @Override
+        public void handleMessage(Message msg) {
+            switch (msg.what){
+                case BLEDataUtil.BLE_DATA:
+                    mController.write(mac, (byte[]) msg.obj);
+                    break;
+            }
+        }
+    };
+
+    private void sendFileData(Uri uri) {
+        try {
+            byte[] b = FileUtil.InputStream2ByteArray(uri.getPath());
+            BLEDataUtil.handleByte(b,handler1,500);
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
@@ -254,6 +312,7 @@ public class DisplayFragment extends BaseFragment implements BluetoothModule.Not
 
         mBtnAdapter.setOnLongClickListener(this);
         mBtnAdapter.setOnItemClickListener(this);
+        mBtnAdapter.setOnSelectFileListener(this);
         mBtnAdapter.setOnAddItemListener(new BtnAdapter.OnAddItemListener() {
             @Override
             public void onAddItem(CmdBean cmdBean) {
@@ -595,5 +654,24 @@ public class DisplayFragment extends BaseFragment implements BluetoothModule.Not
             SpUtil.putList(getContext(), "btn", mBtnAdapter.getmList());
         }
     }
+
+    @Override
+    public void onSelectFile() {
+        if (isConn) {
+            Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+            intent.setType("*/*");//设置类型，我这里是任意类型，任意后缀的可以这样写。
+            intent.addCategory(Intent.CATEGORY_OPENABLE);
+            getActivity().startActivityForResult(intent, 99);
+        }else {
+            Snackbar.make(llLayout, "未连接蓝牙", Snackbar.LENGTH_INDEFINITE)
+                    .setAction("去接连", new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            ((MainActivity) (getActivity())).setShowFragment(MainActivity.CONFIG);
+                        }
+                    }).show();
+        }
+    }
+
 
 }

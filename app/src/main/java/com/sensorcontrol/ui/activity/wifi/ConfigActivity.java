@@ -53,10 +53,6 @@ public class ConfigActivity extends WifiConfigActivity {
     TextView gotoBtn;
 
     private List<GizWifiGAgentType> types;
-    private String wifiName;
-    private String wifiKey;
-    private GizWifiDevice mDevice;
-    private List<GizWifiDevice> mDevices;
     private ListDialog mListDialog;
     private String wifiSSID;
     private List<ScanResult> mScanResults;
@@ -74,7 +70,7 @@ public class ConfigActivity extends WifiConfigActivity {
 
     @Override
     protected void setData() {
-        WifiManager wifiManager = (WifiManager) getSystemService(WIFI_SERVICE);
+        WifiManager wifiManager = (WifiManager) getApplicationContext().getSystemService(WIFI_SERVICE);
         WifiInfo wifiInfo = wifiManager.getConnectionInfo();
         wifiSSID = wifiInfo.getSSID();
         Log.d("wifi mac: ", wifiSSID);
