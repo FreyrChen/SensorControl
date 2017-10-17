@@ -32,6 +32,8 @@ public class DeviceControlActivity extends GosBaseActivity {
     // 数据点"PWM"对应的标识名
     protected static final String KEY_PWM = "PWM";
 
+    protected static final String File = "bmp";
+
     /*
      * ===========================================================
      * 以下数值对应开发者在云端定义的可写数值型数据点增量值、数据点定义的分辨率、seekbar滚动条补偿值

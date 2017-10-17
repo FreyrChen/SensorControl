@@ -1,9 +1,11 @@
 package com.sensorcontrol.ui.activity;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -25,6 +27,7 @@ import com.gizwits.gizwifisdk.api.GizWifiDevice;
 import com.gizwits.gizwifisdk.enumration.GizWifiDeviceNetStatus;
 import com.gizwits.gizwifisdk.enumration.GizWifiErrorCode;
 import com.sensorcontrol.R;
+import com.sensorcontrol.util.HexStrUtils;
 
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -41,6 +44,7 @@ public class DeviceControlActivity extends com.sensorcontrol.base.DeviceControlA
     private Switch sw_bool_LED;
     private TextView tv_data_PWM;
     private SeekBar sb_data_PWM;
+    private TextView tv_send_file;
 
     private enum handler_key {
 
@@ -89,15 +93,17 @@ public class DeviceControlActivity extends com.sensorcontrol.base.DeviceControlA
 
     private void initView() {
 
-        sw_bool_LED = (Switch) findViewById(R.id.sw_bool_LED);
-        tv_data_PWM = (TextView) findViewById(R.id.tv_data_PWM);
-        sb_data_PWM = (SeekBar) findViewById(R.id.sb_data_PWM);
+        sw_bool_LED = findViewById(R.id.sw_bool_LED);
+        tv_data_PWM = findViewById(R.id.tv_data_PWM);
+        sb_data_PWM = findViewById(R.id.sb_data_PWM);
+        tv_send_file = findViewById(R.id.send_file);
     }
 
     private void initEvent() {
 
         sw_bool_LED.setOnClickListener(this);
         sb_data_PWM.setOnSeekBarChangeListener(this);
+        tv_send_file.setOnClickListener(this);
 
     }
 
@@ -136,16 +142,56 @@ public class DeviceControlActivity extends com.sensorcontrol.base.DeviceControlA
             case R.id.sw_bool_LED:
                 sendCommand(KEY_LED, sw_bool_LED.isChecked());
                 break;
+            case R.id.send_file:
+                Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+                intent.setType("*/*");//设置类型，我这里是任意类型，任意后缀的可以这样写。
+                intent.addCategory(Intent.CATEGORY_OPENABLE);
+                startActivityForResult(intent, 109);
+                break;
             default:
                 break;
         }
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == 109){
+            if (resultCode == Activity.RESULT_OK) {
+                Uri uri = data.getData();
+                showNormalDialog(uri);
+            }
+        }
+    }
+
+    private void showNormalDialog(final Uri uri) {
+        final android.support.v7.app.AlertDialog.Builder normalDialog =
+                new android.support.v7.app.AlertDialog.Builder(this);
+        normalDialog.setTitle("发送文件");
+        normalDialog.setMessage("文件路径："+uri.getPath().toString());
+        normalDialog.setPositiveButton("确定",
+                new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        byte[] s = HexStrUtils.readData(getApplicationContext(),uri);
+                        sendCommand(File,HexStrUtils.bytesToHexString(s));
+                    }
+                });
+        normalDialog.setNegativeButton("关闭",
+                new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
+                        }
+                    });
+            // 显示
+        normalDialog.show();
+    }
+
     /*
-     * ========================================================================
-     * EditText 点击键盘“完成”按钮方法
-     * ========================================================================
-     */
+         * ========================================================================
+         * EditText 点击键盘“完成”按钮方法
+         * ========================================================================
+         */
     @Override
     public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
 

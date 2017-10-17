@@ -107,7 +107,20 @@
 			</LinearLayout>
 
 		</RelativeLayout>
+		<RelativeLayout
+			android:id="@+id/send_file"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:layout_marginBottom="1dp"
+			android:background="@color/white"
+			android:padding="15dp" >
 
+			<TextView
+				android:layout_width="wrap_content"
+				android:layout_height="match_parent"
+				android:text="发送文件(图片、音乐、文本)" />
+
+		</RelativeLayout>
 
 	</LinearLayout>
 

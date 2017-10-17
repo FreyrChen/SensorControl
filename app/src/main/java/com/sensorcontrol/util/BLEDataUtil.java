@@ -25,13 +25,16 @@ import java.io.IOException;
 public class BLEDataUtil {
 
     /**数据头*/
-    private static final byte[] START_BYTE = new String("FFAAAT").getBytes();
+    private static final byte[] START_BYTE = intToButeArray((short)0xffff);
     /**数据头占位*/
-    private static final int HEAD_NUM = START_BYTE.length;
-    /**包数int占位，一个int为4字节*/
-    private static final int INT_NUM = 4;
-    /**蓝牙最大发送20个字节，但是首个字节由标志位占用10字节*/
-    private static final int MAX_SIZE = 20-HEAD_NUM+INT_NUM;
+    private static final short HEAD_NUM = (short) START_BYTE.length;
+    static byte k = 0x55;
+    /**占位*/
+    private static final int INT_NUM = 5;
+    /**累加和*/
+    private static int summation;
+    /**蓝牙最大发送20个字节，但是首个字节由标志位占用4字节,累积和占1字节*/
+    private static final short MAX_SIZE = 20-INT_NUM;
     public static final int BLE_DATA = 986;
     /**总包数*/
     private static int num;
@@ -48,10 +51,10 @@ public class BLEDataUtil {
      */
     public static void handleByte(byte[] b, final Handler handler, int time){
         if (b.length > 20){
-            num = b.length / MAX_SIZE;
+            num = (b.length / MAX_SIZE);
             yu = b.length % MAX_SIZE;
         }
-        sendByte = splitPackage(num,yu,b);
+//        sendByte = splitPackage(num,yu,b);
         for (int i = 0; i < sendByte.length; i++) {
             final int index = i;
             handler.postDelayed(new Runnable() {
@@ -73,17 +76,16 @@ public class BLEDataUtil {
      * @param b
      * @return
      */
-    private static byte[][] splitPackage(int m,int yu,byte[] b) {
-        m = m + 2;
+    private static byte[][] splitPackage(short m,short yu,byte[] b) {
+        m = (short) (m + 2);
         byte[][] sendData = new byte[m][];
-        byte[] frist = tihuan(intToButeArray(num),START_BYTE,START_BYTE.length,false);
+        byte[] frist = tihuan(intToButeArray(m),START_BYTE,HEAD_NUM,false);
         System.out.println("frist______" + frist.length);
         for (int i = 0; i < m; i++) {
             if (i == m-1){
-                sendData[i] = new byte[yu + 10];
+                sendData[i] = new byte[yu + INT_NUM];
             }else if (i == 0){
                 sendData[i] = new byte[10];
-
             }else {
                 sendData[i] = new byte[20];
             }
@@ -91,17 +93,18 @@ public class BLEDataUtil {
         //添加头部
         sendData[0] = frist;
         for (int i = 1; i < m; i++) {
-            byte[] b1  = tihuan(intToButeArray(i),START_BYTE, HEAD_NUM, false);
+            byte[] b1 = intToButeArray(i);
             for (int j = 0; j < sendData[i].length; j++) {
-                if (j > 9){
-                    sendData[i][j] = b[j - 10 + (MAX_SIZE * (i-1))];
+                if (j > 3 && j != sendData[i].length-1){
+                    sendData[i][j] = b[j - 4 + (MAX_SIZE * (i-1))];
+                }else if (j == sendData[i].length-1){
+                    sendData[i][j] = summation(sendData[i]);
                 }else {
                     sendData[i][j] = b1[j];
                 }
             }
             System.out.print(sendData[i].length);
         }
-
         for (int i = 0; i < sendData.length ; i++) {
             System.out.println("sendData[i].length_________"+sendData[i].length);
         }
@@ -110,6 +113,18 @@ public class BLEDataUtil {
     }
 
 
+    private static byte summation(byte[] bytes){
+        byte b = 0;
+        for (int i = 0; i < bytes.length; i++) {
+            b += bytes[i];
+        }
+
+        return (byte) (b%256);
+    }
+
+    public static void main(String[] a){
+
+    }
 
     public static int byteArrayToInt(byte[] byteArray) {
         int n = 0;
@@ -197,10 +212,8 @@ public class BLEDataUtil {
             resultArray = new byte[rlen];
             System.arraycopy(allArray,0,resultArray,0,spos );//之前的数据
             System.arraycopy(newArray, 0, resultArray, spos, nlen); // 新数据
-
         }
         return resultArray;
-
     }
 
 }

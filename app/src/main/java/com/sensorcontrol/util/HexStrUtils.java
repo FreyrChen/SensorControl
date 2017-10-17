@@ -1,5 +1,11 @@
 package com.sensorcontrol.util;
 
+import android.content.Context;
+import android.net.Uri;
+
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Locale;
 
 public class HexStrUtils {
@@ -55,4 +61,39 @@ public class HexStrUtils {
 		return sb.toString();
 	}
 
+	/**
+	 * 读取数据
+	 * @param context
+	 * @param uri
+	 * @return
+	 */
+	public static byte[] readData(Context context, Uri uri){
+		InputStream inputStream = null;
+		try {
+			inputStream = context.getContentResolver().openInputStream(uri);
+			if(inputStream == null) return null;
+			return toByteArray(inputStream);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}finally {
+			if(inputStream != null){
+				try {
+					inputStream.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+	}
+
+	public static byte[] toByteArray(InputStream input) throws IOException {
+		ByteArrayOutputStream output = new ByteArrayOutputStream();
+		byte[] buffer = new byte[4096];
+		int n = 0;
+		while (-1 != (n = input.read(buffer))) {
+			output.write(buffer, 0, n);
+		}
+		return output.toByteArray();
+	}
 }
