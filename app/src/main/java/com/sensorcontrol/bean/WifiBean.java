@@ -7,17 +7,37 @@ package com.sensorcontrol.bean;
 
 public class WifiBean {
 
-    String string;
+    String mac;
+    String did;
+    String productKey;
 
-    public WifiBean(String string) {
-        this.string = string;
+    public WifiBean(String mac, String did, String productKey) {
+        this.mac = mac;
+        this.did = did;
+        this.productKey = productKey;
     }
 
-    public String getString() {
-        return string;
+    public String getMac() {
+        return mac;
     }
 
-    public void setString(String string) {
-        this.string = string;
+    public void setMac(String mac) {
+        this.mac = mac;
+    }
+
+    public String getDid() {
+        return did;
+    }
+
+    public void setDid(String did) {
+        this.did = did;
+    }
+
+    public String getProductKey() {
+        return productKey;
+    }
+
+    public void setProductKey(String productKey) {
+        this.productKey = productKey;
     }
 }

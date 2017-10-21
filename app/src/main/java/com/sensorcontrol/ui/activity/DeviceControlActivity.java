@@ -18,16 +18,23 @@ import android.view.View;
 import android.view.Window;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import com.gizwits.gizwifisdk.api.GizWifiDevice;
 import com.gizwits.gizwifisdk.enumration.GizWifiDeviceNetStatus;
 import com.gizwits.gizwifisdk.enumration.GizWifiErrorCode;
 import com.sensorcontrol.R;
+import com.sensorcontrol.base.GosControlModuleBaseActivity;
+import com.sensorcontrol.bean.EventBean;
+import com.sensorcontrol.util.BLEDataUtil;
 import com.sensorcontrol.util.HexStrUtils;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -36,7 +43,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * 目标定在月亮之上，即使失败，也可以落在众星之间。
  */
 
-public class DeviceControlActivity extends com.sensorcontrol.base.DeviceControlActivity implements View.OnClickListener, TextView.OnEditorActionListener, SeekBar.OnSeekBarChangeListener {
+public class DeviceControlActivity extends GosControlModuleBaseActivity implements View.OnClickListener, TextView.OnEditorActionListener, SeekBar.OnSeekBarChangeListener {
 
     /** 设备列表传入的设备变量 */
     private GizWifiDevice mDevice;
@@ -44,7 +51,7 @@ public class DeviceControlActivity extends com.sensorcontrol.base.DeviceControlA
     private Switch sw_bool_LED;
     private TextView tv_data_PWM;
     private SeekBar sb_data_PWM;
-    private TextView tv_send_file;
+    private RelativeLayout tv_send_file;
 
     private enum handler_key {
 
@@ -52,6 +59,9 @@ public class DeviceControlActivity extends com.sensorcontrol.base.DeviceControlA
         UPDATE_UI,
 
         DISCONNECT,
+
+        D1,
+        D2,
     }
 
     private Runnable mRunnable = new Runnable() {
@@ -77,6 +87,14 @@ public class DeviceControlActivity extends com.sensorcontrol.base.DeviceControlA
                 case DISCONNECT:
                     toastDeviceDisconnectAndExit();
                     break;
+                case D1:
+                    progressDialog1.cancel();
+                    Toast.makeText(DeviceControlActivity.this, "发送成功", Toast.LENGTH_SHORT).show();
+                    break;
+                case D2:
+                    progressDialog1.cancel();
+                    Toast.makeText(DeviceControlActivity.this, "连接断开,发送到第 "+msg.obj +" 个包", Toast.LENGTH_SHORT).show();
+                    break;
             }
         }
     };
@@ -89,6 +107,7 @@ public class DeviceControlActivity extends com.sensorcontrol.base.DeviceControlA
         setActionBar(true, true, getDeviceName());
         initView();
         initEvent();
+        setProgressDialog1();
     }
 
     private void initView() {
@@ -131,16 +150,21 @@ public class DeviceControlActivity extends com.sensorcontrol.base.DeviceControlA
     protected void onDestroy() {
         super.onDestroy();
         mHandler.removeCallbacks(mRunnable);
+        if (t != null) {
+            t.stop();
+        }
+//        handle.removeCallbacks(run);
         // 退出页面，取消设备订阅
         mDevice.setSubscribe(false);
         mDevice.setListener(null);
+
     }
 
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.sw_bool_LED:
-                sendCommand(KEY_LED, sw_bool_LED.isChecked());
+                sendCommand(KEY_LED_ONOFF, sw_bool_LED.isChecked());
                 break;
             case R.id.send_file:
                 Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
@@ -163,6 +187,43 @@ public class DeviceControlActivity extends com.sensorcontrol.base.DeviceControlA
         }
     }
 
+    Runnable run = new Runnable(){
+        @Override
+        public void run() {
+
+            for (int i = 0; i < sendByte.length; i++) {
+//                EventBus.getDefault().post(i);
+                if (!mDevice.isBind()){
+
+                    Message msg = new Message();
+                    msg.what = handler_key.D2.ordinal();
+                    msg.obj = i;
+                    mHandler.sendMessage(msg);
+                    Thread.currentThread().stop();
+                    return;
+                }
+                sendByte1 = sendByte[i];
+                try {
+                    Thread.currentThread().sleep(50);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                sendFile(sendByte1);
+                if (i == sendByte.length-1){
+                    Message msg = new Message();
+                    msg.what = handler_key.D1.ordinal();
+                    msg.obj = i;
+                    mHandler.sendMessage(msg);
+
+                }
+            }
+        }
+    };
+
+    Thread t;
+    private byte[][] sendByte;
+    private byte[] sendByte1;
+
     private void showNormalDialog(final Uri uri) {
         final android.support.v7.app.AlertDialog.Builder normalDialog =
                 new android.support.v7.app.AlertDialog.Builder(this);
@@ -172,8 +233,16 @@ public class DeviceControlActivity extends com.sensorcontrol.base.DeviceControlA
                 new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        byte[] s = HexStrUtils.readData(getApplicationContext(),uri);
-                        sendCommand(File,HexStrUtils.bytesToHexString(s));
+                        byte[] s = HexStrUtils.readData(getApplicationContext(), uri);
+                        progressDialog1.show();
+                        if (s.length > 302) {
+                            sendByte = BLEDataUtil.splitPackage1(s.length / 302, s.length % 302, s);
+                            t = new Thread(run);
+                            t.start();
+                        }else {
+                            sendFile(s);
+                            Toast.makeText(DeviceControlActivity.this, "发送成功", Toast.LENGTH_SHORT).show();
+                        }
                     }
                 });
         normalDialog.setNegativeButton("关闭",
@@ -214,7 +283,7 @@ public class DeviceControlActivity extends com.sensorcontrol.base.DeviceControlA
 
         switch (seekBar.getId()) {
             case R.id.sb_data_PWM:
-                tv_data_PWM.setText(formatValue((progress + PWM_OFFSET) * PWM_RATIO + PWM_ADDITION, 1));
+                tv_data_PWM.setText(formatValue((progress + PWM_LED_OFFSET) * PWM_LED_RATIO + PWM_LED_ADDITION, 1));
                 break;
             default:
                 break;
@@ -230,7 +299,7 @@ public class DeviceControlActivity extends com.sensorcontrol.base.DeviceControlA
     public void onStopTrackingTouch(SeekBar seekBar) {
         switch (seekBar.getId()) {
             case R.id.sb_data_PWM:
-                sendCommand(KEY_PWM, (seekBar.getProgress() + PWM_OFFSET ) * PWM_RATIO + PWM_ADDITION);
+                sendCommand(KEY_PWM_LED, (seekBar.getProgress() + PWM_LED_OFFSET ) * PWM_LED_RATIO + PWM_LED_ADDITION);
                 break;
             default:
                 break;
@@ -280,9 +349,9 @@ public class DeviceControlActivity extends com.sensorcontrol.base.DeviceControlA
      */
     protected void updateUI() {
 
-        sw_bool_LED.setChecked(data_LED);
-        tv_data_PWM.setText(data_PWM+"");
-        sb_data_PWM.setProgress((int)((data_PWM - PWM_ADDITION) / PWM_RATIO - PWM_OFFSET));
+        sw_bool_LED.setChecked(data_led_onoff);
+        tv_data_PWM.setText(data_pwm_led+"");
+        sb_data_PWM.setProgress((int)((data_pwm_led - PWM_LED_ADDITION) / PWM_LED_RATIO - PWM_LED_OFFSET));
 
     }
 
@@ -340,6 +409,11 @@ public class DeviceControlActivity extends com.sensorcontrol.base.DeviceControlA
         Log.i("liang", "下发命令：" + hashMap.toString());
     }
 
+    private void sendFile(Object s){
+        ConcurrentHashMap<String, Object> hashMap = new ConcurrentHashMap<String, Object>();
+        hashMap.put(KEY_KZ, s);
+        mDevice.write(hashMap,5);
+    }
     private boolean isDeviceCanBeControlled() {
         return mDevice.getNetStatus() == GizWifiDeviceNetStatus.GizDeviceControlled;
     }
@@ -494,4 +568,6 @@ public class DeviceControlActivity extends com.sensorcontrol.base.DeviceControlA
             mHandler.sendEmptyMessage(handler_key.UPDATE_UI.ordinal());
         }
     }
+
+
 }

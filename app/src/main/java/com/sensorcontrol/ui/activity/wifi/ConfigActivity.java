@@ -104,16 +104,15 @@ public class ConfigActivity extends WifiConfigActivity {
     }
 
     @Override
-    protected void didSetDeviceOnboarding(GizWifiErrorCode result, String mac, String did, String productKey) {
+    protected void didSetDeviceOnboarding(GizWifiErrorCode result, GizWifiDevice device) {
         progressDialog.cancel();
         if (result == GizWifiErrorCode.GIZ_SDK_SUCCESS){
             Toast.makeText(this, R.string.configuration_successful, Toast.LENGTH_SHORT).show();
-            EventBus.getDefault().post(UPDATEUI);
+            EventBus.getDefault().post(device);
             finish();
         }else {
             Toast.makeText(mActivity, ErrorHandleUtil.toastError(result,getApplicationContext()), Toast.LENGTH_SHORT).show();
         }
-
     }
 
     @OnClick({R.id.iv_goto, R.id.goto_btn})

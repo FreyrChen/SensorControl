@@ -58,6 +58,7 @@ public class GosBaseActivity extends FragmentActivity{
 
     /** 等待框 */
     public ProgressDialog progressDialog;
+    public ProgressDialog progressDialog1;
 
     /** 标题栏 */
     public ActionBar actionBar;
@@ -145,6 +146,17 @@ public class GosBaseActivity extends FragmentActivity{
         progressDialog.setMessage(loadingText);
         progressDialog.setCanceledOnTouchOutside(false);
     }
+
+    /**
+     * 设置ProgressDialog
+     */
+    public void setProgressDialog1() {
+        progressDialog1 = new ProgressDialog(mActivity);
+        progressDialog1.setCanceledOnTouchOutside(false);
+        progressDialog1.setMessage("正在发送");
+    }
+
+
 
     /**
      * 设置ProgressDialog

@@ -28,7 +28,6 @@ public class BLEDataUtil {
     private static final byte[] START_BYTE = intToButeArray((short)0xffff);
     /**数据头占位*/
     private static final short HEAD_NUM = (short) START_BYTE.length;
-    static byte k = 0x55;
     /**占位*/
     private static final int INT_NUM = 5;
     /**累加和*/
@@ -109,6 +108,25 @@ public class BLEDataUtil {
             System.out.println("sendData[i].length_________"+sendData[i].length);
         }
         System.out.println("sendData.length_________"+sendData.length);
+        return sendData;
+    }
+
+    public static byte[][] splitPackage1(int m,int yu,byte[] b) {
+        m = (m + 1);
+
+        byte[][] sendData = new byte[m][302];
+        for (int i = 0; i < m; i++) {
+            if (i == m - 1){
+                sendData[i] = new byte[yu];
+            } else {
+                sendData[i] = new byte[302];
+            }
+        }
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < sendData[i].length; j++) {
+                sendData[i][j] = b[j + (302 * i)];
+            }
+        }
         return sendData;
     }
 

@@ -37,6 +37,7 @@ import com.sensorcontrol.ui.adapter.SliderAdapter;
 import com.sensorcontrol.util.BLEDataUtil;
 import com.sensorcontrol.util.FileUtil;
 import com.sensorcontrol.util.SpUtil;
+import com.sensorcontrol.util.StringUtils;
 import com.sensorcontrol.view.ATDialog;
 import com.sensorcontrol.view.BarView;
 import com.sensorcontrol.view.InputDialog;
@@ -187,12 +188,6 @@ public class DisplayFragment extends BaseFragment implements BluetoothModule.Not
                     SpUtil.putList(getContext(), "slider",mSliderAdapter.getmList());
                 }
                 break;
-            case 99:
-                if (resultCode == Activity.RESULT_OK) {
-                    Uri uri = data.getData();
-                    showNormalDialog(uri);
-                }
-                break;
         }
     }
 
@@ -231,12 +226,13 @@ public class DisplayFragment extends BaseFragment implements BluetoothModule.Not
     };
 
     private void sendFileData(Uri uri) {
-        try {
-            byte[] b = FileUtil.InputStream2ByteArray(uri.getPath());
-            BLEDataUtil.handleByte(b,handler1,500);
-        } catch (IOException e) {
-            e.printStackTrace();
+        byte[] b = FileUtil.getByteArrayFromUri(uri,getContext());
+        byte[] b1 = new byte[20];
+        for (int i = 0; i < 20; i++) {
+            b1[i] = b[i];
         }
+        mController.write(mac, StringUtils.bytesToHexString(b1));
+//        BLEDataUtil.handleByte(b,handler1,500);
     }
 
     private void initSp() {
@@ -508,10 +504,16 @@ public class DisplayFragment extends BaseFragment implements BluetoothModule.Not
     }
 
     @Subscribe
-    public void onEvent(EventBean event) {
-        if (event != null) {
-            mac = event.getMac();
+    public void onEvent(Object event) {
+
+        if (event instanceof EventBean && event != null) {
+            EventBean bean = (EventBean) event;
+            mac = bean.getMac();
             isConn = true;
+        }
+        if (event instanceof Uri && event != null) {
+            Uri uri = (Uri) event;
+            showNormalDialog(uri);
         }
     }
 
@@ -661,7 +663,7 @@ public class DisplayFragment extends BaseFragment implements BluetoothModule.Not
             Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
             intent.setType("*/*");//设置类型，我这里是任意类型，任意后缀的可以这样写。
             intent.addCategory(Intent.CATEGORY_OPENABLE);
-            getActivity().startActivityForResult(intent, 99);
+            getActivity().startActivityForResult(intent, 77);
         }else {
             Snackbar.make(llLayout, "未连接蓝牙", Snackbar.LENGTH_INDEFINITE)
                     .setAction("去接连", new View.OnClickListener() {

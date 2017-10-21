@@ -17,7 +17,9 @@ import com.gizwits.gizwifisdk.enumration.GizWifiErrorCode;
 import com.gizwits.gizwifisdk.listener.GizWifiSDKListener;
 import com.sensorcontrol.R;
 import com.sensorcontrol.app.Constants;
+import com.sensorcontrol.app.GosDeploy;
 import com.sensorcontrol.base.BaseActivity;
+import com.sensorcontrol.util.ErrorHandleUtil;
 
 import java.util.Timer;
 import java.util.TimerTask;
@@ -26,6 +28,8 @@ import java.util.regex.Pattern;
 
 import butterknife.BindView;
 import butterknife.OnClick;
+
+import static com.gizwits.gizwifisdk.enumration.GizWifiErrorCode.GIZ_OTHER_ERROR;
 
 /**
  * Created by lizhe on 2017/10/9 0009.
@@ -83,7 +87,7 @@ public class RegisterUserActivity extends BaseActivity {
                                        String token) {
             progressDialog.cancel();
             if (GizWifiErrorCode.GIZ_SDK_SUCCESS != result) {
-                Toast.makeText(mActivity, "注册失败", Toast.LENGTH_SHORT).show();
+                Toast.makeText(mActivity, ErrorHandleUtil.toastError(result,getApplicationContext()), Toast.LENGTH_SHORT).show();
             } else {
                 Toast.makeText(mActivity, "注册成功", Toast.LENGTH_SHORT).show();
                 Intent intent = new Intent();
@@ -139,7 +143,7 @@ public class RegisterUserActivity extends BaseActivity {
                     Toast.makeText(mActivity, "请输入合法手机号", Toast.LENGTH_SHORT).show();
                     return;
                 }
-                String AppSecret = Constants.AppSecret;
+                String AppSecret = GosDeploy.setAppSecret();
                 GizWifiSDK.sharedInstance().requestSendPhoneSMSCode(AppSecret,etName.getText().toString().trim());
                 break;
             case R.id.btnRegister:

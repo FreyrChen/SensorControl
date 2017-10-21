@@ -13,6 +13,8 @@ import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.gizwits.gizwifisdk.api.GizDeviceSharing;
 import com.gizwits.gizwifisdk.api.GizWifiDevice;
 import com.gizwits.gizwifisdk.api.GizWifiSDK;
 import com.gizwits.gizwifisdk.enumration.GizWifiDeviceNetStatus;
@@ -22,6 +24,7 @@ import com.gizwits.gizwifisdk.listener.GizWifiSDKListener;
 import com.sensorcontrol.R;
 import com.sensorcontrol.app.GosDeploy;
 import com.sensorcontrol.base.BaseFragment;
+import com.sensorcontrol.bean.WifiBean;
 import com.sensorcontrol.ui.activity.DeviceControlActivity;
 import com.sensorcontrol.ui.activity.wifi.ConfigActivity;
 import com.sensorcontrol.ui.adapter.DeviceListAdapter;
@@ -57,6 +60,8 @@ public class DeviceListFragment extends BaseFragment implements SwipeRefreshLayo
     VerticalSwipeRefreshLayout idSwipeLy1;
     @BindView(R.id.id_swipe_ly)
     VerticalSwipeRefreshLayout idSwipeLy;
+    @BindView(R.id.add_Devices)
+    LinearLayout linearLayout;
 
     private String softssid, mUid, mToken;
     /**
@@ -255,7 +260,6 @@ public class DeviceListFragment extends BaseFragment implements SwipeRefreshLayo
 
     @Override
     protected void init() {
-        EventBus.getDefault().register(this);
         gosDeploy = new GosDeploy(getContext());
         setProgressDialog();
         icBoundDevices = mRootView.findViewById(R.id.icBoundDevices);
@@ -285,7 +289,7 @@ public class DeviceListFragment extends BaseFragment implements SwipeRefreshLayo
         idSwipeLy.setOnRefreshListener(this);
         idSwipeLy1.setOnRefreshListener(this);
         initData();
-        GizWifiSDK.sharedInstance().setListener(mListener);
+
         slvBoundDevices.initSlideMode(SlideListView2.MOD_RIGHT);
         slvOfflineDevices.initSlideMode(SlideListView2.MOD_RIGHT);
     }
@@ -302,10 +306,30 @@ public class DeviceListFragment extends BaseFragment implements SwipeRefreshLayo
 
     @Override
     public void onResume() {
+        super.onResume();
+        GizWifiSDK.sharedInstance().setListener(mListener);
         deviceslist = GizWifiSDK.sharedInstance().getDeviceList();
         updateUI();
+        if (deviceslist == null){
+            linearLayout.setVisibility(View.GONE);
+        }else if (deviceslist.size() == 0){
+            linearLayout.setVisibility(View.GONE);
+        }
         GizWifiSDK.sharedInstance().getBoundDevices(mUid, mToken, ProductKeyList);
-        super.onResume();
+        // TODO GosMessageHandler.getSingleInstance().SetHandler(handler);
+        if (boundMessage.size() != 0) {
+            progressDialog.show();
+            if (boundMessage.size() == 2) {
+                GizWifiSDK.sharedInstance().bindDevice(mUid, mToken, boundMessage.get(0), boundMessage.get(1), null);
+            } else if (boundMessage.size() == 1) {
+                GizWifiSDK.sharedInstance().bindDeviceByQRCode(mUid, mToken, boundMessage.get(0));
+            } else if (boundMessage.size() == 3) {
+
+                GizDeviceSharing.checkDeviceSharingInfoByQRCode(SpUtil.getString(getContext(),"Token"), boundMessage.get(2));
+            } else {
+                Log.i("Apptest", "ListSize:" + boundMessage.size());
+            }
+        }
     }
 
     private void initEvent() {
@@ -384,16 +408,9 @@ public class DeviceListFragment extends BaseFragment implements SwipeRefreshLayo
         }
     }
 
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onEventMainThread(int event) {
-        deviceslist = GizWifiSDK.sharedInstance().getDeviceList();
-        updateUI();
-    }
-
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        EventBus.getDefault().unregister(this);
     }
 
 }

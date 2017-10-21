@@ -58,8 +58,8 @@ public class MessageCenter {
 			// 设置要过滤的设备 productKey 列表。不过滤则直接传 null
 			List productInfo = new ArrayList();
 			ConcurrentHashMap<String, Object> product = new ConcurrentHashMap<String, Object>();
-			product.put("productKey", "6631adbb8ef44ad48e3bbe7def28b25c");
-			product.put("productSecret", "39b30282945b442e82ba3643c05382f3");
+			product.put("productKey", "7498a32ccdb84eff81ea84ded2673095");
+			product.put("productSecret", "fa3dac009bc04378b5fdd9217f34c16c");
 			productInfo.add(product);
 			GizWifiSDK.sharedInstance().startWithAppInfo(c,appInfo,productInfo,null,false);
 

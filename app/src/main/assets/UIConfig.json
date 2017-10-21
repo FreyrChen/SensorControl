@@ -1,7 +1,7 @@
 ﻿{
-	"app_id": "87af64c441d148579474c1c5811fa533",
-	"app_secret": "0d45bd38878e42cfbba31d6605115f48",
-	"product_key": ["6631adbb8ef44ad48e3bbe7def28b25c"],
+	"app_id": "12ffab496f5a49faaf25027e940826b2",
+	"app_secret": "4dac426c29fb48f5889c85defd72c949",
+	"product_key": ["7498a32ccdb84eff81ea84ded2673095"],
 	"openAPI_URL": "",
 	"site_URL": "",
 	"push_URL": "",
@@ -18,7 +18,7 @@
 	"navigationBarTextColor": "000000",
 	"configProgressViewColor": "000000",
 	"addDeviceTitle": "",
-	"qq": false,
-	"wechat": false,
+	"qq": true,
+	"wechat": true,
 	"anonymousLogin": true
 }
