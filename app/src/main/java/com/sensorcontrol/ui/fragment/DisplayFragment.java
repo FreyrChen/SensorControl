@@ -1,13 +1,14 @@
 package com.sensorcontrol.ui.fragment;
 
-import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.support.annotation.BoolRes;
+import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
@@ -21,21 +22,28 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.inuker.bluetooth.library.model.BleGattProfile;
+import com.inuker.bluetooth.library.search.SearchResult;
 import com.sensorcontrol.R;
 import com.sensorcontrol.base.BaseFragment;
 import com.sensorcontrol.bean.ATBean;
 import com.sensorcontrol.bean.CmdBean;
 import com.sensorcontrol.bean.EventBean;
 import com.sensorcontrol.bean.ListBean;
+import com.sensorcontrol.controller.BluetoothController;
 import com.sensorcontrol.module.BluetoothModule;
 import com.sensorcontrol.ui.activity.BtnListActivity;
+import com.sensorcontrol.ui.activity.DeviceControlActivity;
 import com.sensorcontrol.ui.activity.MainActivity;
 import com.sensorcontrol.ui.adapter.BtnAdapter;
 import com.sensorcontrol.ui.adapter.BtnListAdapter;
 import com.sensorcontrol.ui.adapter.DataAdapter;
 import com.sensorcontrol.ui.adapter.SliderAdapter;
 import com.sensorcontrol.util.BLEDataUtil;
+import com.sensorcontrol.util.BmpUtils;
 import com.sensorcontrol.util.FileUtil;
+import com.sensorcontrol.util.HexStrUtils;
 import com.sensorcontrol.util.SpUtil;
 import com.sensorcontrol.util.StringUtils;
 import com.sensorcontrol.view.ATDialog;
@@ -55,7 +63,7 @@ import butterknife.BindView;
  */
 
 public class DisplayFragment extends BaseFragment implements BluetoothModule.NotifyData, BtnAdapter.OnLongClickListener,
-        BtnAdapter.OnItemClickListener, InputDialog.OnCancelListener, InputDialog.OnConfirmListener ,BtnAdapter.OnSelectFileListener{
+        BtnAdapter.OnItemClickListener, InputDialog.OnCancelListener, InputDialog.OnConfirmListener ,BtnAdapter.OnSelectFileListener,BluetoothController.WriteSuccessListener{
 
     @BindView(R.id.toolbar_title)
     TextView toolbarTitle;
@@ -93,6 +101,7 @@ public class DisplayFragment extends BaseFragment implements BluetoothModule.Not
     private int position;
     private SliderAdapter mSliderAdapter;
     private boolean flag = true;
+    private ProgressDialog progressDialog1;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -122,6 +131,7 @@ public class DisplayFragment extends BaseFragment implements BluetoothModule.Not
         aDialog = new ATDialog(getContext());
         mDataAdapter = new DataAdapter(getContext());
         BluetoothModule.getBluetoothModule().setNotifyData(this);
+        mController.setWriteSuccessListener(this);
         layoutManager = new GridLayoutManager(getContext(), 3);
         mBtnAdapter = new BtnAdapter(getContext());
         recyclerView.setLayoutManager(layoutManager);
@@ -130,6 +140,10 @@ public class DisplayFragment extends BaseFragment implements BluetoothModule.Not
         recyclerViewSlider.setLayoutManager(layoutManager);
         mBtnAdapter.setmList(mList);
         mSliderAdapter.setmList(mList1);
+        progressDialog1 = new ProgressDialog(getContext());
+        progressDialog1.setCanceledOnTouchOutside(false);
+        progressDialog1.setCancelable(false);
+        progressDialog1.setMessage("正在发送");
         sliderBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -166,6 +180,7 @@ public class DisplayFragment extends BaseFragment implements BluetoothModule.Not
                 }
             }
         });
+
     }
 
     @Override
@@ -225,14 +240,89 @@ public class DisplayFragment extends BaseFragment implements BluetoothModule.Not
         }
     };
 
-    private void sendFileData(Uri uri) {
-        byte[] b = FileUtil.getByteArrayFromUri(uri,getContext());
-        byte[] b1 = new byte[20];
-        for (int i = 0; i < 20; i++) {
-            b1[i] = b[i];
+    Runnable run = new Runnable(){
+        @Override
+        public void run() {
+            for (int i = 0; i < sendByte.length; i++) {
+                try {
+                    Thread.currentThread().sleep(10);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                sendByte1 = sendByte[i];
+                mController.write(mac,sendByte1);
+                progressDialog1.incrementProgressBy((int) ((100f/(float) sendByte.length)*(float) i));
+                progressDialog1.setProgressNumberFormat("%1d"+"/"+"%2d");
+
+                if (i == sendByte.length-1){
+                    System.out.println(i);
+                    Message msg = new Message();
+                    msg.what = handler_key.D1.ordinal();
+                    msg.obj = i;
+                    mHandler.sendMessage(msg);
+                }
+            }
         }
-        mController.write(mac, StringUtils.bytesToHexString(b1));
-//        BLEDataUtil.handleByte(b,handler1,500);
+    };
+
+    @Override
+    public void writeSuccess(int state) {
+        if (BluetoothModule.WRITE_SUCCESS == state){
+
+        }else if (BluetoothModule.WRITE_ERROR == state){
+            Toast.makeText(getContext(), "写入失败", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private enum handler_key {
+        D1,
+        D2,
+    }
+
+    Handler mHandler = new Handler() {
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            handler_key key = handler_key.values()[msg.what];
+            switch (key) {
+                case D1:
+                    progressDialog1.cancel();
+                    Toast.makeText(getContext(), "发送成功", Toast.LENGTH_SHORT).show();
+                    break;
+                case D2:
+                    progressDialog1.cancel();
+                    Toast.makeText(getContext(), "连接断开,发送到第 "+msg.obj +" 个包", Toast.LENGTH_SHORT).show();
+                    break;
+            }
+        }
+    };
+
+    Thread t;
+    private byte[][] sendByte;
+    private byte[] sendByte1;
+    private int size;
+
+    private void sendFileData(Uri uri) {
+        progressDialog1.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+        progressDialog1.show();
+        String prefix = BmpUtils.getImageType(getActivity(),uri);
+        byte[] s = new byte[0];
+        if (prefix != null){
+            try {
+                Bitmap sendBitmap = MediaStore.Images.Media.getBitmap(getActivity().getContentResolver(), uri);
+//                Bitmap sendBitmap = BmpUtils.getBitmapFormUri(getActivity(),uri);
+                s = BmpUtils.getPicturePixel(sendBitmap);
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }else {
+            s = FileUtil.getByteArrayFromUri(uri,getContext());
+        }
+        sendByte = BLEDataUtil.splitPackage1(s.length / 20, s.length % 20, s,20);
+        t = new Thread(run);
+        t.start();
+//        byte[] b = new byte[200];
+//        mController.write(mac,b);
     }
 
     private void initSp() {
@@ -530,7 +620,7 @@ public class DisplayFragment extends BaseFragment implements BluetoothModule.Not
                 displayData.setSelection(displayData.getCount() - 1);
             }
         });
-        String zhi = new String(data);
+        String zhi = data;
         if (!zhi.equals("")) {
             String[] s = zhi.trim().split("=");
             switch (s[0]) {

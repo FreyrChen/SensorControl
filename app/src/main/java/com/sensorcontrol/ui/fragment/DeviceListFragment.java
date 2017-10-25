@@ -311,8 +311,10 @@ public class DeviceListFragment extends BaseFragment implements SwipeRefreshLayo
         deviceslist = GizWifiSDK.sharedInstance().getDeviceList();
         updateUI();
         if (deviceslist == null){
-            linearLayout.setVisibility(View.GONE);
+            linearLayout.setVisibility(View.VISIBLE);
         }else if (deviceslist.size() == 0){
+            linearLayout.setVisibility(View.VISIBLE);
+        }else {
             linearLayout.setVisibility(View.GONE);
         }
         GizWifiSDK.sharedInstance().getBoundDevices(mUid, mToken, ProductKeyList);

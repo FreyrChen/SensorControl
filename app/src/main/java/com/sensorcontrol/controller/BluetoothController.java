@@ -98,12 +98,10 @@ public class BluetoothController implements BluetoothModule.BluetoothModuleData 
                 mHandler.sendMessage(msg);
                 break;
             case BluetoothModule.WRITE_SUCCESS:
-                msg.what = BluetoothModule.WRITE_SUCCESS;
-                mHandler.sendMessage(msg);
+                writeSuccessListener.writeSuccess(state);
                 break;
             case BluetoothModule.READ_ERROR:
-                msg.what = BluetoothModule.READ_ERROR;
-                mHandler.sendMessage(msg);
+                writeSuccessListener.writeSuccess(state);
                 break;
             case BluetoothModule.UNNOTITY_ERROR:
                 msg.what = BluetoothModule.UNNOTITY_ERROR;
@@ -139,6 +137,16 @@ public class BluetoothController implements BluetoothModule.BluetoothModuleData 
         msg.what = BluetoothModule.readData;
         msg.obj = data;
         mHandler.sendMessage(msg);
+    }
+
+    private WriteSuccessListener writeSuccessListener;
+
+    public void setWriteSuccessListener(WriteSuccessListener writeSuccessListener) {
+        this.writeSuccessListener = writeSuccessListener;
+    }
+
+    public interface WriteSuccessListener{
+        void writeSuccess(int state);
     }
 
     public static class Builder{

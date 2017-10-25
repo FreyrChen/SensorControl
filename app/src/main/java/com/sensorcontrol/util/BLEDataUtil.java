@@ -111,22 +111,30 @@ public class BLEDataUtil {
         return sendData;
     }
 
-    public static byte[][] splitPackage1(int m,int yu,byte[] b) {
-        m = (m + 1);
-
-        byte[][] sendData = new byte[m][302];
-        for (int i = 0; i < m; i++) {
-            if (i == m - 1){
-                sendData[i] = new byte[yu];
-            } else {
-                sendData[i] = new byte[302];
+    public static byte[][] splitPackage1(int m,int yu,byte[] b,int num) {
+        byte[][] sendData;
+        if (yu == 0) {
+            sendData = new byte[m][20];
+        }else {
+            m = m + 1;
+            sendData = new byte[m][];
+            for (int i = 0; i < m; i++) {
+                if (i == m - 1){
+                    sendData[i] = new byte[yu];
+                } else {
+                    sendData[i] = new byte[num];
+                }
             }
         }
+
+
+
         for (int i = 0; i < m; i++) {
             for (int j = 0; j < sendData[i].length; j++) {
-                sendData[i][j] = b[j + (302 * i)];
+                sendData[i][j] = b[j + (num * i)];
             }
         }
+
         return sendData;
     }
 

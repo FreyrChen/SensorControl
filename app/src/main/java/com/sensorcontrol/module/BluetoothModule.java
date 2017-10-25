@@ -17,6 +17,7 @@ import com.inuker.bluetooth.library.search.SearchRequest;
 import com.inuker.bluetooth.library.search.SearchResult;
 import com.inuker.bluetooth.library.search.response.SearchResponse;
 import com.sensorcontrol.app.App;
+import com.sensorcontrol.util.HexStrUtils;
 
 import java.util.UUID;
 import static com.inuker.bluetooth.library.Code.REQUEST_SUCCESS;
@@ -186,7 +187,7 @@ public class BluetoothModule {
         mClient.notify(mac, service, character, new BleNotifyResponse() {
             @Override
             public void onNotify(UUID service, UUID character, byte[] value) {
-                String s = new String(value);
+                String s = HexStrUtils.bytesToHexString(value);
                 notifyData1.notifyData(s);
             }
 

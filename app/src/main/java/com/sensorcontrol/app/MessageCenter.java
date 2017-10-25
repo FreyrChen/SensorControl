@@ -28,7 +28,6 @@ public class MessageCenter {
 	}
 
 	private void init(Context c) {
-
 		gosDeploy = new GosDeploy(c);
 		ConcurrentHashMap<String, String> appInfo = new ConcurrentHashMap();
 		String AppID = GosDeploy.setAppID();

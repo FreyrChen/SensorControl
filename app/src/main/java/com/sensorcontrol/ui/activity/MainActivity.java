@@ -198,6 +198,14 @@ public class MainActivity extends BaseActivity {
     }
 
     @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == 77){
+            Uri uri = data.getData();
+            EventBus.getDefault().post(uri);
+        }
+    }
+
+    @Override
     protected void onResume() {
         super.onResume();
         checkPermission();

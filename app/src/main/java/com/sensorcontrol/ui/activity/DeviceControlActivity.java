@@ -5,6 +5,7 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -17,6 +18,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.SeekBar;
@@ -27,15 +29,19 @@ import com.gizwits.gizwifisdk.api.GizWifiDevice;
 import com.gizwits.gizwifisdk.enumration.GizWifiDeviceNetStatus;
 import com.gizwits.gizwifisdk.enumration.GizWifiErrorCode;
 import com.sensorcontrol.R;
+import com.sensorcontrol.app.Constants;
 import com.sensorcontrol.base.GosControlModuleBaseActivity;
 import com.sensorcontrol.bean.EventBean;
 import com.sensorcontrol.util.BLEDataUtil;
+import com.sensorcontrol.util.BmpUtils;
+import com.sensorcontrol.util.ErrorHandleUtil;
 import com.sensorcontrol.util.HexStrUtils;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
+import java.io.IOException;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -52,7 +58,7 @@ public class DeviceControlActivity extends GosControlModuleBaseActivity implemen
     private TextView tv_data_PWM;
     private SeekBar sb_data_PWM;
     private RelativeLayout tv_send_file;
-
+    private ImageView mIvBmp;
     private enum handler_key {
 
         /** 更新界面 */
@@ -90,6 +96,7 @@ public class DeviceControlActivity extends GosControlModuleBaseActivity implemen
                 case D1:
                     progressDialog1.cancel();
                     Toast.makeText(DeviceControlActivity.this, "发送成功", Toast.LENGTH_SHORT).show();
+                    mDevice.getDeviceStatus();
                     break;
                 case D2:
                     progressDialog1.cancel();
@@ -116,6 +123,7 @@ public class DeviceControlActivity extends GosControlModuleBaseActivity implemen
         tv_data_PWM = findViewById(R.id.tv_data_PWM);
         sb_data_PWM = findViewById(R.id.sb_data_PWM);
         tv_send_file = findViewById(R.id.send_file);
+        mIvBmp = findViewById(R.id.iv_bmp);
     }
 
     private void initEvent() {
@@ -129,6 +137,7 @@ public class DeviceControlActivity extends GosControlModuleBaseActivity implemen
     private void initDevice() {
         Intent intent = getIntent();
         mDevice = (GizWifiDevice) intent.getParcelableExtra("GizWifiDevice");
+//        mDevice.setSubscribe(true);
         mDevice.setListener(gizWifiDeviceListener);
         Log.i("Apptest", mDevice.getDid());
     }
@@ -150,12 +159,9 @@ public class DeviceControlActivity extends GosControlModuleBaseActivity implemen
     protected void onDestroy() {
         super.onDestroy();
         mHandler.removeCallbacks(mRunnable);
-        if (t != null) {
-            t.stop();
-        }
 //        handle.removeCallbacks(run);
         // 退出页面，取消设备订阅
-        mDevice.setSubscribe(false);
+//        mDevice.setSubscribe(false);
         mDevice.setListener(null);
 
     }
@@ -190,17 +196,24 @@ public class DeviceControlActivity extends GosControlModuleBaseActivity implemen
     Runnable run = new Runnable(){
         @Override
         public void run() {
-
+            boolean flag = false;
             for (int i = 0; i < sendByte.length; i++) {
-//                EventBus.getDefault().post(i);
-                if (!mDevice.isBind()){
-
-                    Message msg = new Message();
-                    msg.what = handler_key.D2.ordinal();
-                    msg.obj = i;
-                    mHandler.sendMessage(msg);
-                    Thread.currentThread().stop();
-                    return;
+                if (!mDevice.isLAN()){
+                    flag = true;
+                    try {
+                        Message msg = new Message();
+                        msg.what = handler_key.D2.ordinal();
+                        msg.obj = i;
+                        mHandler.sendMessage(msg);
+                        Thread.currentThread().wait();
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }else {
+                    if (flag) {
+                        Thread.currentThread().notify();
+                        flag = false;
+                    }
                 }
                 sendByte1 = sendByte[i];
                 try {
@@ -233,14 +246,33 @@ public class DeviceControlActivity extends GosControlModuleBaseActivity implemen
                 new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        byte[] s = HexStrUtils.readData(getApplicationContext(), uri);
-                        progressDialog1.show();
-                        if (s.length > 302) {
-                            sendByte = BLEDataUtil.splitPackage1(s.length / 302, s.length % 302, s);
+                        String path = uri.getPath();
+                        String prefix = BmpUtils.getImageType(DeviceControlActivity.this,uri);
+                        byte[] s = new byte[0];
+                        if (prefix != null){
+                            try {
+                                Bitmap sendBitmap = BmpUtils.getBitmapFormUri(DeviceControlActivity.this,uri);
+                                mIvBmp.setImageBitmap(sendBitmap);
+                                s = BmpUtils.getPicturePixel(sendBitmap);
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                        }else {
+                            s = HexStrUtils.readData(getApplicationContext(), uri);
+                        }
+//                        progressDialog1.show();
+//                        sendFile(s);
+//                        progressDialog1.cancel();
+//                        Toast.makeText(DeviceControlActivity.this, "发送成功", Toast.LENGTH_SHORT).show();
+
+                        if (s.length > 900) {
+                            sendByte = BLEDataUtil.splitPackage1(s.length / 900, s.length % 900, s,900);
                             t = new Thread(run);
                             t.start();
                         }else {
                             sendFile(s);
+                            progressDialog1.cancel();
+                            mDevice.getDeviceStatus();
                             Toast.makeText(DeviceControlActivity.this, "发送成功", Toast.LENGTH_SHORT).show();
                         }
                     }
@@ -352,7 +384,8 @@ public class DeviceControlActivity extends GosControlModuleBaseActivity implemen
         sw_bool_LED.setChecked(data_led_onoff);
         tv_data_PWM.setText(data_pwm_led+"");
         sb_data_PWM.setProgress((int)((data_pwm_led - PWM_LED_ADDITION) / PWM_LED_RATIO - PWM_LED_OFFSET));
-
+        byte[] bytes = data_kz;
+        System.out.println(bytes);
     }
 
     private void setEditText(EditText et, Object value) {
@@ -458,6 +491,7 @@ public class DeviceControlActivity extends GosControlModuleBaseActivity implemen
         LinearLayout llNo, llSure;
         llNo = (LinearLayout) window.findViewById(R.id.llNo);
         llSure = (LinearLayout) window.findViewById(R.id.llSure);
+
 
         if (!TextUtils.isEmpty(mDevice.getAlias())) {
             setEditText(etAlias, mDevice.getAlias());
@@ -566,8 +600,35 @@ public class DeviceControlActivity extends GosControlModuleBaseActivity implemen
         if (result == GizWifiErrorCode.GIZ_SDK_SUCCESS && dataMap.get("data") != null) {
             getDataFromReceiveDataMap(dataMap);
             mHandler.sendEmptyMessage(handler_key.UPDATE_UI.ordinal());
+        }else {
+            Toast.makeText(DeviceControlActivity.this, ErrorHandleUtil.toastError(result,DeviceControlActivity.this), Toast.LENGTH_SHORT).show();
+        }
+        // 已定义的设备故障数据点，设备发生故障后该字段有内容，没有发生故障则没内容
+        if (dataMap.get("faults") != null) {
+            ConcurrentHashMap<String, Object> map =  (ConcurrentHashMap<String, Object>)dataMap.get("faults");
+            StringBuilder sb = new StringBuilder();
+            for (String key : map.keySet()) {
+                sb.append(key + "  :" +  map.get(key) + "\r\n");
+                Toast.makeText(DeviceControlActivity.this,
+                        sb.toString(), Toast.LENGTH_SHORT).show();
+            }
+        }
+        // 已定义的设备报警数据点，设备发生报警后该字段有内容，没有发生报警则没内容
+        if (dataMap.get("alerts") != null) {
+            ConcurrentHashMap<String, Object> map =  (ConcurrentHashMap<String, Object>)dataMap.get("alerts");
+            StringBuilder sb = new StringBuilder();
+            for (String key : map.keySet()) {
+                sb.append(key + "  :" +  map.get(key) + "\r\n");
+                Toast.makeText(DeviceControlActivity.this,
+                        sb.toString(), Toast.LENGTH_SHORT).show();
+            }
+        }
+        // 透传数据，无数据点定义，适合开发者自行定义协议自行解析
+        if (dataMap.get("binary") != null) {
+            byte[] binary = (byte[]) dataMap.get("binary");
+            Log.i("", "Binary data:"
+                    + HexStrUtils.bytesToHexString(binary));
         }
     }
-
 
 }

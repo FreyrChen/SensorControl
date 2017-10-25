@@ -121,7 +121,12 @@
 				android:text="发送文件(图片、音乐、文本)" />
 
 		</RelativeLayout>
-
+		<ImageView
+			android:id="@+id/iv_bmp"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_marginTop="20dp"
+			/>
 	</LinearLayout>
 
 </ScrollView>

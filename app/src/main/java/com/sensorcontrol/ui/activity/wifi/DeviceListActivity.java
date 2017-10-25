@@ -1,5 +1,6 @@
 package com.sensorcontrol.ui.activity.wifi;
 
+import android.content.Intent;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.View;
 import android.widget.Button;
@@ -94,6 +95,10 @@ public class DeviceListActivity extends WifiConnActivity implements SwipeRefresh
         }
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+    }
 
     @Override
     public void onRefresh() {
