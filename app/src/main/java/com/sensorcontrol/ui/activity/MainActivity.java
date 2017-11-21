@@ -1,9 +1,12 @@
 package com.sensorcontrol.ui.activity;
 
 import android.Manifest;
+import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
 import android.net.Uri;
+import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
@@ -11,8 +14,10 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
+import android.util.Log;
 import android.view.View;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -22,11 +27,21 @@ import com.sensorcontrol.module.ClientManager;
 import com.sensorcontrol.ui.fragment.ConfigFragment;
 import com.sensorcontrol.ui.fragment.DeviceListFragment;
 import com.sensorcontrol.ui.fragment.DisplayFragment;
+import com.sensorcontrol.ui.fragment.SendImgFragment;
 import com.sensorcontrol.ui.fragment.WifiFragment;
 
 import org.greenrobot.eventbus.EventBus;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashSet;
+import java.util.Locale;
 import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -52,6 +67,8 @@ public class MainActivity extends BaseActivity {
     TextView pair;
     @BindView(R.id.wifi)
     TextView wifi;
+    @BindView(R.id.send_img)
+    TextView send_img;
     @BindView(R.id.rl_all)
     RelativeLayout rl_all;
 
@@ -63,6 +80,7 @@ public class MainActivity extends BaseActivity {
     public static final String CONFIG = "config";
     public static final String WIFI = "wifi";
     public static final String DEVICE = "device";
+    public static final String SENDIMG = "send";
     @Override
     protected int setLayout() {
         return R.layout.activity_main;
@@ -79,7 +97,7 @@ public class MainActivity extends BaseActivity {
 
     }
 
-    @OnClick({R.id.home_page, R.id.pair, R.id.wifi})
+    @OnClick({R.id.home_page, R.id.pair, R.id.wifi,R.id.send_img})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.home_page:
@@ -96,6 +114,11 @@ public class MainActivity extends BaseActivity {
                 clickAnimation(wifi);
                 setBtn(WIFI);
                 setShowFragment(DEVICE);
+                break;
+            case R.id.send_img:
+                setBtn(SENDIMG);
+                clickAnimation(send_img);
+                setShowFragment(SENDIMG);
                 break;
         }
     }
@@ -128,6 +151,9 @@ public class MainActivity extends BaseActivity {
                 case DEVICE:
                     showFragment = new DeviceListFragment();
                     break;
+                case SENDIMG:
+                    showFragment = new SendImgFragment();
+                    break;
             }
         }
 
@@ -153,16 +179,25 @@ public class MainActivity extends BaseActivity {
                 homePage.setSelected(true);
                 pair.setSelected(false);
                 wifi.setSelected(false);
+                send_img.setSelected(false);
                 break;
             case CONFIG:
                 homePage.setSelected(false);
                 pair.setSelected(true);
                 wifi.setSelected(false);
+                send_img.setSelected(false);
                 break;
             case WIFI:
                 homePage.setSelected(false);
                 pair.setSelected(false);
                 wifi.setSelected(true);
+                send_img.setSelected(false);
+                break;
+            case SENDIMG:
+                send_img.setSelected(true);
+                homePage.setSelected(false);
+                pair.setSelected(false);
+                wifi.setSelected(false);
                 break;
         }
     }
@@ -203,6 +238,13 @@ public class MainActivity extends BaseActivity {
             Uri uri = data.getData();
             EventBus.getDefault().post(uri);
         }
+        if (requestCode == 1) {
+            String path = saveCameraImage(data);
+            Intent intent = new Intent(this,SendActivity.class);
+            intent.putExtra("path",path);
+            startActivity(intent);
+        }
+
     }
 
     @Override
@@ -237,4 +279,42 @@ public class MainActivity extends BaseActivity {
                 super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         }
     }
+
+
+    /** 保存相机的图片 **/
+    private String saveCameraImage(Intent data) {
+        // 检查sd card是否存在
+        if (!Environment.getExternalStorageState().equals(
+                Environment.MEDIA_MOUNTED)) {
+            Log.i("saveCameraImage", "sd card is not avaiable/writeable right now.");
+            return null;
+        }
+        // 为图片命名啊
+        String date = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date());
+        String name = date + ".jpg";
+        Bitmap bmp = (Bitmap) data.getExtras().get("data");// 解析返回的图片成bitmap
+
+        // 保存文件
+        FileOutputStream fos = null;
+        File file = new File("/mnt/sdcard/test/");
+        file.mkdirs();// 创建文件夹
+        String fileName = "/mnt/sdcard/test/" + name;// 保存路径
+
+        try {// 写入SD card
+            fos = new FileOutputStream(fileName);
+            bmp.compress(Bitmap.CompressFormat.JPEG, 100, fos);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                fos.flush();
+                fos.close();
+            } catch (IOException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        }
+        return fileName;
+    }
+
 }

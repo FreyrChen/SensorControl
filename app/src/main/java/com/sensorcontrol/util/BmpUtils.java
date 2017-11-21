@@ -1,11 +1,15 @@
 package com.sensorcontrol.util;
 
 import android.app.Activity;
+import android.content.ContentResolver;
+import android.content.Context;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.Matrix;
 import android.net.Uri;
+import android.provider.MediaStore;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -30,30 +34,18 @@ public class BmpUtils {
         int height = bitmap.getHeight();
 
         List<Byte> list = new ArrayList<Byte>();
-        for (int i = 0; i < height; i++) {
-            for (int j = 0; j < width; j++) {
-                int color = bitmap.getPixel(j, i);
+        for (int i = 0; i < width; i++) {
+            for (int j = 0; j < height; j++) {
+                int color = bitmap.getPixel(i, j);
                 byte r = (byte) Color.red(color);
                 byte g = (byte) Color.green(color);
                 byte b = (byte) Color.blue(color);
-                list.add(r);
-                list.add(g);
                 list.add(b);
+                list.add(g);
+                list.add(r);
             }
         }
-//        bitmap.getPixels(pixels, 0, width, 0, 0, width, height);
-//
-//        List<Byte> list = new ArrayList<Byte>();
-//        for (int i = 0; i < pixels.length; i++) {
-//            byte clr = (byte) pixels[i];
-//            byte redl = (byte) ((clr & 0xff0000) >> 16); // 取高两位
-//            byte greenl = (byte) ((clr & 0xff00) >> 8); // 取中两位
-//            byte bluel = (byte) (clr & 0xff);
-//
-//            list.add(redl);
-//            list.add(greenl);
-//            list.add(bluel);
-//        }
+
         byte[] shorts = new byte[list.size()];
         for (int i = 0; i < list.size(); i++) {
             shorts[i] = list.get(i);
@@ -179,5 +171,49 @@ public class BmpUtils {
         } else {
             return null;
         }
+    }
+    public static boolean getRealFilePath(final Context context, final Uri uri ) {
+        if ( null == uri ) return false;
+        final String scheme = uri.getScheme();
+        String data = null;
+        if ( scheme == null )
+            data = uri.getPath();
+        else if ( ContentResolver.SCHEME_FILE.equals( scheme ) ) {
+            data = uri.getPath();
+        } else if ( ContentResolver.SCHEME_CONTENT.equals( scheme ) ) {
+            Cursor cursor = context.getContentResolver().query( uri, new String[] { MediaStore.Images.ImageColumns.DATA }, null, null, null );
+            if ( null != cursor ) {
+                if ( cursor.moveToFirst() ) {
+                    int index = cursor.getColumnIndex( MediaStore.Images.ImageColumns.DATA );
+                    if ( index > -1 ) {
+                        data = cursor.getString( index );
+                    }
+                }
+                cursor.close();
+            }
+        }
+        String[] d = data.split(".");
+        String s = d[d.length];
+        if (s.equals("jpg")||s.equals("JPG")||s.equals("bmp")||s.equals("BMP")||s.equals("PNG")||s.equals("png")){
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * @param
+     * @param bytes
+     * @param opts
+     * @return Bitmap
+     */
+    public static Bitmap getPicFromBytes(byte[] bytes,
+                                         BitmapFactory.Options opts) {
+        if (bytes != null)
+            if (opts != null)
+                return BitmapFactory.decodeByteArray(bytes, 0, bytes.length,
+                        opts);
+            else
+                return BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+        return null;
     }
 }

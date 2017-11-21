@@ -74,7 +74,7 @@ public class NetUtils {
 	 * 
 	 *         *
 	 */
-	static public boolean isMobileConnected(Context context) {
+	public static boolean isMobileConnected(Context context) {
 		if (context != null) {
 			ConnectivityManager mConnectivityManager = (ConnectivityManager) context
 					.getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -146,7 +146,7 @@ public class NetUtils {
 	 *            上下文
 	 * @return the current wifi scan result
 	 */
-	static public List<ScanResult> getCurrentWifiScanResult(Context c) {
+	public static List<ScanResult> getCurrentWifiScanResult(Context c) {
 		WifiManager wifiManager = (WifiManager) c.getSystemService(Context.WIFI_SERVICE);
 		wifiManager.startScan();
 		return wifiManager.getScanResults();

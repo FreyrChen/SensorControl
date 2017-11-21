@@ -245,7 +245,7 @@ public class DisplayFragment extends BaseFragment implements BluetoothModule.Not
         public void run() {
             for (int i = 0; i < sendByte.length; i++) {
                 try {
-                    Thread.currentThread().sleep(10);
+                    Thread.currentThread().sleep(20);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
@@ -304,9 +304,8 @@ public class DisplayFragment extends BaseFragment implements BluetoothModule.Not
     private void sendFileData(Uri uri) {
         progressDialog1.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
         progressDialog1.show();
-        String prefix = BmpUtils.getImageType(getActivity(),uri);
         byte[] s = new byte[0];
-        if (prefix != null){
+//        if (BmpUtils.getRealFilePath(getContext(),uri)){
             try {
                 Bitmap sendBitmap = MediaStore.Images.Media.getBitmap(getActivity().getContentResolver(), uri);
 //                Bitmap sendBitmap = BmpUtils.getBitmapFormUri(getActivity(),uri);
@@ -315,9 +314,9 @@ public class DisplayFragment extends BaseFragment implements BluetoothModule.Not
             } catch (IOException e) {
                 e.printStackTrace();
             }
-        }else {
-            s = FileUtil.getByteArrayFromUri(uri,getContext());
-        }
+//        }else {
+////            s = FileUtil.getByteArrayFromUri(uri,getContext());
+//        }
         sendByte = BLEDataUtil.splitPackage1(s.length / 20, s.length % 20, s,20);
         t = new Thread(run);
         t.start();

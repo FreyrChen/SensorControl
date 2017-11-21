@@ -143,6 +143,7 @@ public class BluetoothModule {
                 }
             }
         });
+
     }
 
     //byte[]不能超过20字节

@@ -4,6 +4,7 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/SensorControl.iml" filepath="$PROJECT_DIR$/SensorControl.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/clipimage/clipimage.iml" filepath="$PROJECT_DIR$/clipimage/clipimage.iml" />
       <module fileurl="file://$PROJECT_DIR$/jgraph/jgraph.iml" filepath="$PROJECT_DIR$/jgraph/jgraph.iml" />
     </modules>
   </component>

@@ -6,4 +6,20 @@
             <enum name="right" value="1"></enum>
         </attr>
     </declare-styleable>
+
+    <!--civHeight和civWidth是裁剪框的宽高比例。-->
+    <!--civTipText提示文字的内容-->
+    <!--civTipTextSize提示文字的大小-->
+    <!--civMaskColor遮罩层的颜色值-->
+    <!--civClipPadding裁剪内边距。由于裁剪框是在控件内部的，最终我选择使用padding来说明裁剪框与我们控件边缘的距离。-->
+    <declare-styleable name="ClipImageView">
+        <attr name="civHeight" format="integer" />
+        <attr name="civWidth" format="integer" />
+        <attr name="civTipText" format="string" />
+        <attr name="civTipTextSize" format="dimension" />
+        <attr name="civMaskColor" format="color" />
+        <attr name="civClipPadding" format="dimension" />
+        <attr name="civClipRoundCorner" format="dimension|reference" />
+        <attr name="civClipCircle" format="boolean" />
+    </declare-styleable>
 </resources>

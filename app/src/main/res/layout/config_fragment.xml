@@ -55,15 +55,15 @@
             android:textSize="16sp" />
 
     </LinearLayout>
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/company_introduction"
-        android:textSize="16sp"
-        android:textColor="#333333"
-        android:background="@drawable/shape_introduction"
-        android:layout_margin="10dp"
-        android:padding="10dp"
-        android:layout_alignParentBottom="true"
-        />
+    <!--<TextView-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:text="@string/company_introduction"-->
+        <!--android:textSize="16sp"-->
+        <!--android:textColor="#333333"-->
+        <!--android:background="@drawable/shape_introduction"-->
+        <!--android:layout_margin="10dp"-->
+        <!--android:padding="10dp"-->
+        <!--android:layout_alignParentBottom="true"-->
+        <!--/>-->
 </RelativeLayout>

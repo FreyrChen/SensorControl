@@ -40,7 +40,7 @@ public class StartupActivity extends AppCompatActivity {
                 overridePendingTransition(R.anim.open_out, R.anim.open_in);// 淡出淡入动画效果
                 activity.finish();
             }
-        },3000);
+        },2000);
 
     }
 
