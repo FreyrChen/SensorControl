@@ -22,7 +22,7 @@ public class ImageHelper {
      */
     public static Bitmap handleImageEffect(Bitmap bm, float hue, float saturation, float lum) {
 
-        Bitmap bmp = Bitmap.createBitmap(bm.getWidth(), bm.getHeight(), Bitmap.Config.ARGB_8888);
+        Bitmap bmp = Bitmap.createBitmap(bm.getWidth(), bm.getHeight(), Bitmap.Config.RGB_565);
 
         Canvas canvas = new Canvas(bmp);
 

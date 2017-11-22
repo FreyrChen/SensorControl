@@ -111,7 +111,7 @@ public class SendUtil {
     }
     private static BThread thread;
 
-    public void getDeviceState(){
+    public void getDeviceState(byte[] data){
         timer1 = new Timer();
         timer1.schedule(new TimerTask(){
             @Override
@@ -119,7 +119,7 @@ public class SendUtil {
                 checkThread();
             }
         },CHECK_TIME);
-        thread = new BThread();
+        thread = new BThread(data);
         thread.start();
 
     }
@@ -282,6 +282,11 @@ public class SendUtil {
 
     class BThread extends Thread {
         private boolean flag = true;
+        private byte[] b;
+
+        public BThread(byte[] b) {
+            this.b = b;
+        }
 
         public  void stopThread1(boolean flag) {
             this.flag = !flag;
@@ -292,13 +297,26 @@ public class SendUtil {
             try {
                 socket = new Socket("13.102.25.195", 8080);
                 socket.setSoTimeout(5000);//响应阻塞超时
-                SocketUtil.sendPackageData(socket,new byte[]{0x04});
+                SocketUtil.sendPackageData(socket,b);
                 byte resp = SocketUtil.receive(socket);
-                if (resp == NAK){
-                    handler.sendEmptyMessage(SEND_START);
-                }else {
+                if (resp == 0){
                     handler.sendEmptyMessage(DEVICESTATE);
                 }
+                switch (resp){
+                    case ACK:
+                        handler.sendEmptyMessage(ACK);
+                        break;
+                    case NAK:
+                        handler.sendEmptyMessage(SEND_START);
+                        break;
+                    case EOT:
+                        handler.sendEmptyMessage(EOT);
+                        break;
+                    case CAN:
+                        handler.sendEmptyMessage(CAN);
+                        break;
+                }
+
             } catch (ConnectTimeoutException e){
                 timer1.cancel();
                 handler.sendEmptyMessage(EXECUTION_TIMEOUT);

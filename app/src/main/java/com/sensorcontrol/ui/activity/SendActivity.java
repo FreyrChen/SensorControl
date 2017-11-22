@@ -1,28 +1,37 @@
 package com.sensorcontrol.ui.activity;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Handler;
 import android.os.Message;
 import android.text.TextUtils;
+import android.view.Display;
+import android.view.Gravity;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.SeekBar;
+import android.widget.TextView;
 import android.widget.Toast;
-
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.animation.GlideAnimation;
 import com.bumptech.glide.request.target.SimpleTarget;
 import com.sensorcontrol.R;
 import com.sensorcontrol.base.BaseActivity;
+import com.sensorcontrol.bean.Pickers;
 import com.sensorcontrol.util.BmpUtils;
 import com.sensorcontrol.util.ImageHelper;
 import com.sensorcontrol.util.SendUtil;
 import com.sensorcontrol.view.ClipPictureActivity;
-
+import com.sensorcontrol.view.PickerScrollView;
+import java.util.ArrayList;
+import java.util.List;
 import butterknife.BindView;
 import butterknife.OnClick;
 
@@ -31,7 +40,8 @@ import butterknife.OnClick;
  * 目标定在月亮之上，即使失败，也可以落在众星之间。
  */
 
-public class SendActivity extends BaseActivity implements SeekBar.OnSeekBarChangeListener {
+public class SendActivity extends BaseActivity implements SeekBar.OnSeekBarChangeListener,
+        PickerScrollView.onSelectListener {
 
     private static final int RESULT_LOAD_IMAGE = 99;
     private static final int REQUEST_CLIP_IMAGE = 56;
@@ -45,14 +55,23 @@ public class SendActivity extends BaseActivity implements SeekBar.OnSeekBarChang
     SeekBar sbBrightness;
     @BindView(R.id.iv_bmp_original)
     ImageView ivBmpOriginal;
+    @BindView(R.id.wv_view)
+    TextView wvView;
+    Pickers pickers;
 
     private ProgressDialog progressDialog;
+    private PickerScrollView scrollView;
+    private AlertDialog alertDialog;
     private int jishu = 0;
     private int num;
     private int pLength;
     private SendUtil sendUtil;
     private Bitmap sendBmp;
     String path;
+    private List<Pickers> list;
+
+    byte[] id = new byte[] {0x00, 0x01, 0x02, 0x04, 0x08};
+    String[] name = new String[] {"滚动级别1", "滚动级别2", "滚动级别3", "滚动级别4", "滚动级别5"};;
 
     private static int MAX_VALUE = 255;
     private static int MID_VALUE = 127;
@@ -66,8 +85,9 @@ public class SendActivity extends BaseActivity implements SeekBar.OnSeekBarChang
     @Override
     protected void init() {
         initProgress();
+        initDialog();
         path = getIntent().getStringExtra("path");
-        if (!TextUtils.isEmpty(path)){
+        if (!TextUtils.isEmpty(path)) {
             Glide.with(this).load(path).asBitmap().into(new SimpleTarget<Bitmap>() {
                 @Override
                 public void onResourceReady(Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
@@ -88,6 +108,21 @@ public class SendActivity extends BaseActivity implements SeekBar.OnSeekBarChang
             });
         }
 
+
+    }
+
+    private void initDialog() {
+        list = new ArrayList<Pickers>();
+        for (int i = 0; i < name.length; i++) {
+            list.add(new Pickers(name[i], id[i]));
+        }
+        scrollView = new PickerScrollView(this);
+        // 设置数据，默认选择第一条
+        scrollView.setData(list);
+        scrollView.setSelected(0);
+        alertDialog = new AlertDialog.Builder(this)
+                .setView(scrollView)
+                .create();
     }
 
     @Override
@@ -106,6 +141,7 @@ public class SendActivity extends BaseActivity implements SeekBar.OnSeekBarChang
                 mLum = progress * 1.0F / MID_VALUE;
                 break;
         }
+
         ivSendImg.setImageBitmap(ImageHelper.handleImageEffect(sendBmp, mHue, mSaturation, mLum));
     }
 
@@ -124,7 +160,7 @@ public class SendActivity extends BaseActivity implements SeekBar.OnSeekBarChang
         sbTone.setOnSeekBarChangeListener(this);
         sbSaturation.setOnSeekBarChangeListener(this);
         sbBrightness.setOnSeekBarChangeListener(this);
-
+        scrollView.setOnSelectListener(this);
     }
 
     private void initProgress() {
@@ -135,17 +171,16 @@ public class SendActivity extends BaseActivity implements SeekBar.OnSeekBarChang
     }
 
 
-
     private Handler handler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
             switch (msg.what) {
                 case SendUtil.NAK:
-                    if (jishu < 3){
+                    if (jishu < 3) {
                         sendUtil.send(num);
                         jishu++;
-                    }else {
+                    } else {
                         progressDialog.cancel();
                         Toast.makeText(SendActivity.this, "重发3次失败", Toast.LENGTH_SHORT).show();
                     }
@@ -204,14 +239,13 @@ public class SendActivity extends BaseActivity implements SeekBar.OnSeekBarChang
     };
 
 
-
-
-    @OnClick({R.id.btn_send,R.id.iv_back,R.id.btn_crop})
+    @OnClick({R.id.btn_send, R.id.iv_back, R.id.btn_crop,R.id.send_wv,R.id.wv_view})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.btn_send:
                 if (sendBmp != null) {
                     progressDialog.show();
+                    sendBmp = ImageHelper.handleImageEffect(sendBmp, mHue, mSaturation, mLum);
                     sendBmp = BmpUtils.compressImage(sendBmp);
                     final byte[] s = BmpUtils.getPicturePixel(sendBmp);
                     int yu = s.length % 1460;
@@ -222,7 +256,7 @@ public class SendActivity extends BaseActivity implements SeekBar.OnSeekBarChang
                     }
 
                     sendUtil = new SendUtil(handler, s);
-                    sendUtil.getDeviceState();
+                    sendUtil.getDeviceState(new byte[]{0x04});
 //                    SocketUtil.sendData("13.102.25.195",8080,s);
 //                    uploadImgOne(imgPath,device.getDid());
 //                    progressDialog.show();
@@ -236,6 +270,32 @@ public class SendActivity extends BaseActivity implements SeekBar.OnSeekBarChang
                 Intent intent = new Intent(this, ClipPictureActivity.class);
                 intent.putExtra("path", path);
                 startActivityForResult(intent, REQUEST_CLIP_IMAGE);
+                break;
+            case R.id.send_wv:
+                if (pickers != null) {
+                    progressDialog.show();
+                    byte[] data = new byte[2];
+                    data[0] = 0x02;
+                    data[1] = pickers.getShowId();
+                    SendUtil sendUtil = new SendUtil(handler, data);
+                    sendUtil.getDeviceState(data);
+                }else {
+                    Toast.makeText(mActivity, "选择滑动级别", Toast.LENGTH_SHORT).show();
+                }
+                break;
+            case R.id.wv_view:
+                alertDialog.show();
+                //设置弹窗在底部
+                Window window = alertDialog.getWindow();
+                window.setGravity(Gravity.BOTTOM);
+                scrollView.setPadding(0,10,0,0);
+                WindowManager m = getWindowManager();
+                Display d = m.getDefaultDisplay(); //为获取屏幕宽、高
+                WindowManager.LayoutParams p = alertDialog.getWindow().getAttributes(); //获取对话框当前的参数值
+
+                p.width = d.getWidth(); // 宽度
+                p.height = d.getHeight()/3; // 高度
+                alertDialog.getWindow().setAttributes(p); //设置生效
                 break;
         }
     }
@@ -281,5 +341,14 @@ public class SendActivity extends BaseActivity implements SeekBar.OnSeekBarChang
     @Override
     protected void onDestroy() {
         super.onDestroy();
+    }
+
+    @Override
+    public void onSelect(Pickers pickers) {
+        wvView.setText(pickers.getShowConetnt());
+        System.out.println("选择：" + pickers.getShowId() + "--银行："
+                + pickers.getShowConetnt());
+        this.pickers = pickers;
+
     }
 }

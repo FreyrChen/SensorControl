@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">文宇智控测控终端</string>
+    <string name="app_name">智领传媒测控终端</string>
     <string name="user">用户校准</string>
     <string name="show">显示</string>
     <string name="input_prefill">AT+</string>
