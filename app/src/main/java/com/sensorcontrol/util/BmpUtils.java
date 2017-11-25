@@ -216,4 +216,29 @@ public class BmpUtils {
                 return BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
         return null;
     }
+
+    /**
+     * 获取本地图片并指定高度和宽度
+     */
+    public Bitmap getNativeImage(String imagePath) {
+        BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inJustDecodeBounds = true;
+        options.outWidth = 376;
+        options.outHeight = 160;
+        // 获取这个图片的宽和高
+        Bitmap myBitmap = BitmapFactory.decodeFile(imagePath, options); //此时返回myBitmap为空
+        //计算缩放比
+        int be = (int) (options.outHeight / (float) 200);
+        int ys = options.outHeight % 200;//求余数
+        float fe = ys / (float) 200;
+        if (fe >= 0.5)
+            be = be + 1;
+        if (be <= 0)
+            be = 1;
+        options.inSampleSize = be;
+        //重新读入图片，注意这次要把options.inJustDecodeBounds 设为 false
+        options.inJustDecodeBounds = false;
+        myBitmap = BitmapFactory.decodeFile(imagePath, options);
+        return myBitmap;
+    }
 }

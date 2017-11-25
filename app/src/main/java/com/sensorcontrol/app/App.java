@@ -3,6 +3,7 @@ package com.sensorcontrol.app;
 import android.app.Activity;
 import android.app.Application;
 import android.support.annotation.Nullable;
+import android.support.multidex.MultiDexApplication;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -25,7 +26,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * 目标定在月亮之上，即使失败，也可以落在众星之间。
  */
 
-public class App extends Application{
+public class App extends MultiDexApplication {
 
     private static App application;
     private Set<Activity> mActivityList;

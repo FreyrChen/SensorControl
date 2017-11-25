@@ -1,62 +1,20 @@
 package com.sensorcontrol.util;
 
-
-import android.os.Handler;
-
-import java.io.BufferedReader;
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.ConnectException;
-import java.net.InetSocketAddress;
 import java.net.Socket;
-import java.net.SocketAddress;
-import java.net.SocketException;
-import java.net.UnknownHostException;
+import java.util.LinkedList;
+import java.util.List;
 
 public class SocketUtil {
 
     public static final String IP_ADDR = "13.102.25.195";//服务器地址
     public static final int PORT = 8080;//服务器端口号
     public static String replyInfo = null;
-
     private static Socket socket = null;
-
-    public static Socket getSocket() {
-        openConn();
-        return socket;
-    }
-
-    public static Socket openConn(){
-        new Thread(){
-            @Override
-            public void run() {
-                try {
-                    socket = new Socket();
-                    socket.setReuseAddress(true);
-                    SocketAddress sa = new InetSocketAddress(IP_ADDR,PORT);
-                    socket.bind(sa);
-                    socket.connect(sa, 2000);
-                } catch (UnknownHostException e) {
-                    e.printStackTrace();
-                } catch (ConnectException e){
-                    e.printStackTrace();
-                } catch (SocketException e){
-                    e.printStackTrace();
-
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        };
-        new Handler().postAtTime(new Runnable() {
-            @Override
-            public void run() {
-
-            }
-        },3000);
-        return socket;
-    }
 
 
     public static boolean close(Socket socket){
@@ -77,41 +35,50 @@ public class SocketUtil {
     }
 
     private static OutputStream os = null;
+    private static BufferedOutputStream bos = null;
+    private static BufferedInputStream br = null;
+    private static InputStream is = null;
 
     public static byte receive(Socket socket) throws IOException {
-        InputStream is = null;
-        BufferedReader br = null;
+        is = socket.getInputStream();
+        br = new BufferedInputStream(is);
+        int r = -1;
         byte[] b = new byte[1];
-        while (true) {
-            is = socket.getInputStream();
-                is.read(b);
-                if (b[0] != 0){
-                    break;
-                }
-            }
+        List<Byte> l = new LinkedList<Byte>();
+        while (l.size() <= 0){
+            byte num = Byte.valueOf((byte)r);
+            l.add(num);
+        }
+        b[0] = l.get(0);
+
+        return b[0];
+    }
+
+    public static void closeConn() throws IOException{
+        if (os != null){
+            os.close();
+        }
+        if (bos != null){
+            bos.close();
+        }
         if (br != null) {
             br.close();
         }
         if (is != null){
             is.close();
         }
-        if (os != null){
-            os.close();
-        }
+
         if (socket != null){
             socket.close();
         }
-        return b[0];
     }
 
     public static void sendPackageData(Socket socket,byte[] data) throws IOException {
         os = socket.getOutputStream();
-        os.write(data);
-        os.flush();
-
+        bos = new BufferedOutputStream(os);
+        bos.write(data);
+        bos.flush();
+        socket.shutdownOutput();
     }
-
-
-
 
 }

@@ -241,9 +241,9 @@ public class SendUtil {
 
         @Override
         public void run() {
-            Looper.prepare();
             try {
                 socket = new Socket("13.102.25.195", 8080);
+//                socket = new Socket("192.168.1.106", 10023);
                 socket.setSoTimeout(5000);//响应阻塞超时
                 SocketUtil.sendPackageData(socket,t);
                 byte resp = SocketUtil.receive(socket);
@@ -296,6 +296,7 @@ public class SendUtil {
         public void run() {
             try {
                 socket = new Socket("13.102.25.195", 8080);
+//                socket = new Socket("192.168.1.106", 10023);
                 socket.setSoTimeout(5000);//响应阻塞超时
                 SocketUtil.sendPackageData(socket,b);
                 byte resp = SocketUtil.receive(socket);

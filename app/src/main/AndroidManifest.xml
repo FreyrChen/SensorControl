@@ -22,8 +22,8 @@
     <application
         android:name=".app.App"
         android:label="@string/app_name"
-        android:icon="@drawable/logo"
-        android:roundIcon="@drawable/logo"
+        android:icon="@mipmap/ic_launcher"
+        android:roundIcon="@mipmap/ic_launcher"
         android:theme="@style/AppTheme">
         <activity android:name=".ui.activity.StartupActivity"
             android:screenOrientation="portrait"
