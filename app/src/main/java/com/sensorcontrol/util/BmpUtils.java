@@ -220,7 +220,7 @@ public class BmpUtils {
     /**
      * 获取本地图片并指定高度和宽度
      */
-    public Bitmap getNativeImage(String imagePath) {
+    public static Bitmap getNativeImage(String imagePath) {
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inJustDecodeBounds = true;
         options.outWidth = 376;

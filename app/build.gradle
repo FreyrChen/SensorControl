@@ -104,4 +104,9 @@ dependencies {
     compile 'com.github.imkarl:CharacterPickerView:v0.2.5'
     compile 'com.github.vilyever:AndroidSocketClient:3.0.3'
     compile 'com.android.support:multidex:1.0.1'
+    // Mqtt client : Eclipse Paho
+    compile 'org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.0.2'
+    // Logger
+    compile 'com.github.LichFaker:Logger:v1.0.0'
+    compile files('libs/camerasdk_lib.jar')
 }

@@ -41,17 +41,17 @@ public class SocketUtil {
 
     public static byte receive(Socket socket) throws IOException {
         is = socket.getInputStream();
-        br = new BufferedInputStream(is);
-        int r = -1;
+//        br = new BufferedInputStream(is);
         byte[] b = new byte[1];
-        List<Byte> l = new LinkedList<Byte>();
-        while (l.size() <= 0){
-            byte num = Byte.valueOf((byte)r);
-            l.add(num);
+        while (true) {
+            is.read(b);
+            if (b[0] != 0){
+                break;
+            }
         }
-        b[0] = l.get(0);
-
+        closeConn();
         return b[0];
+
     }
 
     public static void closeConn() throws IOException{
@@ -78,7 +78,7 @@ public class SocketUtil {
         bos = new BufferedOutputStream(os);
         bos.write(data);
         bos.flush();
-        socket.shutdownOutput();
+//        socket.shutdownOutput();
     }
 
 }

@@ -5,6 +5,7 @@ import com.vilyever.socketclient.SocketClient;
 import com.vilyever.socketclient.helper.SocketClientDelegate;
 import com.vilyever.socketclient.helper.SocketClientSendingDelegate;
 import com.vilyever.socketclient.helper.SocketPacket;
+import com.vilyever.socketclient.helper.SocketPacketHelper;
 import com.vilyever.socketclient.helper.SocketResponsePacket;
 import com.vilyever.socketclient.util.CharsetUtil;
 
@@ -25,7 +26,7 @@ public class ClientUtil {
     private int num;
     private NetSendListener netSendListener;
 
-
+    private int reconnection;
 
     public ClientUtil() {
         initClient();
@@ -36,7 +37,6 @@ public class ClientUtil {
             @Override
             public void onConnected(SocketClient client) {
                 netSendListener.onConnected(client);
-                client.sendData(new byte[]{0x04});
             }
 
             /**
@@ -123,8 +123,19 @@ public class ClientUtil {
         socketClient.getAddress().setConnectionTimeout(15*1000);// 连接超时时长，单位毫秒
         socketClient.setCharsetName(CharsetUtil.UTF_8); // 设置编码为UTF-8
         socketClient.getSocketPacketHelper().setReceivePacketLengthDataLength(1);
-        socketClient.getSocketPacketHelper().setSendTrailerData(new byte[]{'\n'});
+        //固定心跳包
+        socketClient.getHeartBeatHelper().setDefaultSendData(CharsetUtil.stringToData("HeartBeat", CharsetUtil.UTF_8));
+        socketClient.getHeartBeatHelper().setHeartBeatInterval(10 * 1000); // 设置自动发送心跳包的间隔时长，单位毫秒
+        socketClient.getHeartBeatHelper().setSendHeartBeatEnabled(true); // 设置允许自动发送心跳包，此值默认为false
 
+        socketClient.getSocketPacketHelper().setReceiveTrailerData(new byte[]{0x13, 0x10});
+        socketClient.getSocketPacketHelper().setReceiveTimeout(120 * 1000); // 设置接收超时时长，单位毫秒
+        socketClient.getSocketPacketHelper().setReceiveTimeoutEnabled(true);
+        /**
+         * 设置读取策略为自动读取指定长度
+         */
+        socketClient.getSocketPacketHelper().setReadStrategy(SocketPacketHelper.ReadStrategy.AutoReadByLength);
+        socketClient.getSocketPacketHelper().setReceivePacketLengthDataLength(1);
     }
 
 
@@ -156,7 +167,6 @@ public class ClientUtil {
         void onSendPacketEnd(SocketClient client, SocketPacket packet);
     }
 
-    int reconnection;
 
 
 }

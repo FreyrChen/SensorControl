@@ -4,10 +4,13 @@ import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.ColorMatrix;
+import android.graphics.ColorMatrixColorFilter;
+import android.graphics.Matrix;
+import android.graphics.Paint;
 import android.os.Handler;
-import android.os.Looper;
 import android.os.Message;
-import android.support.annotation.NonNull;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.ImageView;
@@ -17,28 +20,18 @@ import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.request.animation.GlideAnimation;
-import com.bumptech.glide.request.target.SimpleTarget;
+
+import com.muzhi.camerasdk.library.utils.PhotoEnhance;
 import com.sensorcontrol.R;
 import com.sensorcontrol.base.BaseActivity;
 import com.sensorcontrol.bean.Pickers;
 import com.sensorcontrol.util.BmpUtils;
-import com.sensorcontrol.util.ClientUtil;
 import com.sensorcontrol.util.ImageHelper;
 import com.sensorcontrol.util.SendUtil;
 import com.sensorcontrol.util.SocketUtil;
 import com.sensorcontrol.view.ClipPictureActivity;
 import com.sensorcontrol.view.MyPrDialog;
-import com.vilyever.socketclient.SocketClient;
-import com.vilyever.socketclient.helper.SocketClientDelegate;
-import com.vilyever.socketclient.helper.SocketPacket;
-import com.vilyever.socketclient.helper.SocketPacketHelper;
-import com.vilyever.socketclient.helper.SocketResponsePacket;
-import com.vilyever.socketclient.util.CharsetUtil;
-
 import java.io.IOException;
-import java.net.Socket;
 import java.util.List;
 import butterknife.BindView;
 import butterknife.OnClick;
@@ -50,7 +43,6 @@ import butterknife.OnClick;
 
 public class SendActivity extends BaseActivity implements SeekBar.OnSeekBarChangeListener {
 
-    private static final int RESULT_LOAD_IMAGE = 99;
     private static final int REQUEST_CLIP_IMAGE = 56;
     @BindView(R.id.iv_sendImg)
     ImageView ivSendImg;
@@ -79,19 +71,15 @@ public class SendActivity extends BaseActivity implements SeekBar.OnSeekBarChang
     LinearLayout llProgress;
     @BindView(R.id.relativeLayout)
     RelativeLayout rl;
-
-    private MyPrDialog progressDialog;
+    private PhotoEnhance mPhotoEnhance;
     private int jishu = 0;
     private int num;
     private int pLength;
     private SendUtil sendUtil;
     private Bitmap sendBmp;
     String path;
-    private List<Pickers> list;
-    Pickers pickers;
 
     byte[] id = new byte[]{0x00, 0x01, 0x02, 0x04, 0x08};
-    String[] name = new String[]{"滚动级别1", "滚动级别2", "滚动级别3", "滚动级别4", "滚动级别5"};
 
 
     private static int MAX_VALUE = 255;
@@ -107,28 +95,20 @@ public class SendActivity extends BaseActivity implements SeekBar.OnSeekBarChang
     protected void init() {
         path = getIntent().getStringExtra("path");
         if (!TextUtils.isEmpty(path)) {
-            Glide.with(this).load(path).asBitmap().into(new SimpleTarget<Bitmap>() {
-                @Override
-                public void onResourceReady(Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
-//                    sendBmp = BmpUtils.compressImage(resource);
-                    sendBmp = resource;
-                    ivSendImg.setImageBitmap(resource);
-                    ivBmpOriginal.setImageBitmap(resource);
-
-                    sbTone.setMax(MAX_VALUE);
-                    sbSaturation.setMax(MAX_VALUE);
-                    sbBrightness.setMax(MAX_VALUE);
-
-                    sbTone.setProgress(MID_VALUE);
-                    sbSaturation.setProgress(MID_VALUE);
-                    sbBrightness.setProgress(MID_VALUE);
-                }
-            });
+            sendBmp = BmpUtils.getNativeImage(path);
+            ivSendImg.setImageBitmap(sendBmp);
+            ivBmpOriginal.setImageBitmap(sendBmp);
+            mPhotoEnhance = new PhotoEnhance(sendBmp);
+            sbTone.setOnSeekBarChangeListener(this);
+            sbSaturation.setOnSeekBarChangeListener(this);
+            sbBrightness.setOnSeekBarChangeListener(this);
+            sbWv.setOnSeekBarChangeListener(this);
+            sbWv.setMax(MAX_VALUE);
+            sbWv.setProgress(128);
+            tvText.setText(128 + "");
         }
 
-        sbWv.setMax(MAX_VALUE);
-        sbWv.setProgress(128);
-        tvText.setText(128 + "");
+
     }
 
 
@@ -137,23 +117,25 @@ public class SendActivity extends BaseActivity implements SeekBar.OnSeekBarChang
     public void onProgressChanged(SeekBar seekBar, int progress, boolean b) {
         switch (seekBar.getId()) {
             case R.id.sb_tone:
-                //色调
-                mHue = (progress - MID_VALUE) * 1.0F / MID_VALUE * 180;
+                mPhotoEnhance.setContrast(progress);
+                sendBmp = mPhotoEnhance.handleImage(mPhotoEnhance.Enhance_Contrast);
                 break;
             case R.id.sb_saturation:
+                mPhotoEnhance.setSaturation(progress);
+                sendBmp = mPhotoEnhance.handleImage(mPhotoEnhance.Enhance_Saturation);
                 //饱和度
-                mSaturation = progress * 1.0F / MID_VALUE;
                 break;
             case R.id.sb_brightness:
-                //亮度
-                mLum = progress * 1.0F / MID_VALUE;
+                mPhotoEnhance.setBrightness(progress);
+                sendBmp = mPhotoEnhance.handleImage(mPhotoEnhance.Enhance_Brightness);
                 break;
             case R.id.sb_wv:
                 tvText.setText(progress + "");
                 break;
         }
-
-        ivSendImg.setImageBitmap(ImageHelper.handleImageEffect(sendBmp, mHue, mSaturation, mLum));
+        if (sendBmp != null) {
+            ivSendImg.setImageBitmap(sendBmp);
+        }
     }
 
     @Override
@@ -168,10 +150,7 @@ public class SendActivity extends BaseActivity implements SeekBar.OnSeekBarChang
 
     @Override
     protected void setData() {
-        sbTone.setOnSeekBarChangeListener(this);
-        sbSaturation.setOnSeekBarChangeListener(this);
-        sbBrightness.setOnSeekBarChangeListener(this);
-        sbWv.setOnSeekBarChangeListener(this);
+
     }
 
 
@@ -187,7 +166,6 @@ public class SendActivity extends BaseActivity implements SeekBar.OnSeekBarChang
                             sendUtil.send(num);
                             jishu++;
                         } else {
-                            progressDialog.cancel();
                             chongzhi();
                             Toast.makeText(SendActivity.this, "重发3次失败", Toast.LENGTH_SHORT).show();
                         }
@@ -240,7 +218,6 @@ public class SendActivity extends BaseActivity implements SeekBar.OnSeekBarChang
                         Toast.makeText(SendActivity.this, "线程服务关闭", Toast.LENGTH_SHORT).show();
                         break;
                     case SendUtil.THREAD_ERROR:
-                        progressDialog.cancel();
                         SendUtil.closeTimer();
                         Toast.makeText(SendActivity.this, "线程错误", Toast.LENGTH_SHORT).show();
                         break;
@@ -304,8 +281,8 @@ public class SendActivity extends BaseActivity implements SeekBar.OnSeekBarChang
                 if (sendBmp != null) {
                     llProgress.setVisibility(View.VISIBLE);
                     rl.setVisibility(View.GONE);
-                    sendBmp = ImageHelper.handleImageEffect(sendBmp, mHue, mSaturation, mLum);
-                    sendBmp = BmpUtils.compressImage(sendBmp);
+                    sendBmp = BmpUtils.resizeImage2(sendBmp,376,160);
+//                    ivSendImg.setImageBitmap(sendBmp);
                     final byte[] s = BmpUtils.getPicturePixel(sendBmp);
                     int yu = s.length % 1460;
                     if (yu == 0) {
@@ -348,6 +325,7 @@ public class SendActivity extends BaseActivity implements SeekBar.OnSeekBarChang
                 sendBmp = bitmap;
                 ivSendImg.setImageBitmap(sendBmp);
                 ivBmpOriginal.setImageBitmap(sendBmp);
+                mPhotoEnhance = new PhotoEnhance(sendBmp);
             }
         }
     }
@@ -364,6 +342,5 @@ public class SendActivity extends BaseActivity implements SeekBar.OnSeekBarChang
             e.printStackTrace();
         }
     }
-
 
 }

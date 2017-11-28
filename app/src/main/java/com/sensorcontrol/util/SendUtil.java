@@ -99,7 +99,7 @@ public class SendUtil {
     private byte[] img;
     private static Timer timer;
     private static Timer timer1;
-    private final int CHECK_TIME = 6000;
+    private final int CHECK_TIME = 12000;
     private static EThread eThread;
 
     private static int pLength;
@@ -222,6 +222,11 @@ public class SendUtil {
     }
 
     protected void checkThread() {
+        try {
+            SocketUtil.closeConn();
+        } catch (IOException e) {
+            handler.sendEmptyMessage(IO_ERROR);
+        }
         handler.sendEmptyMessage(EXECUTION_TIMEOUT);
     }
 
@@ -243,10 +248,11 @@ public class SendUtil {
         public void run() {
             try {
                 socket = new Socket("13.102.25.195", 8080);
-//                socket = new Socket("192.168.1.106", 10023);
-                socket.setSoTimeout(5000);//响应阻塞超时
+//                socket = new Socket("192.168.1.107", 10023);
                 SocketUtil.sendPackageData(socket,t);
+                socket.setSoTimeout(5000);//响应阻塞超时
                 byte resp = SocketUtil.receive(socket);
+                timer.cancel();// 关闭计时器
                 if (resp == 0){
                     handler.sendEmptyMessage(NAK_UNABSORBED);
                 }
@@ -271,7 +277,6 @@ public class SendUtil {
                 timer.cancel();
                 handler.sendEmptyMessage(IO_ERROR);
             }
-            timer.cancel();// 关闭计时器
             if(!flag) {
                 return;
             }
@@ -296,10 +301,11 @@ public class SendUtil {
         public void run() {
             try {
                 socket = new Socket("13.102.25.195", 8080);
-//                socket = new Socket("192.168.1.106", 10023);
+//                socket = new Socket("192.168.1.107", 10023);
                 socket.setSoTimeout(5000);//响应阻塞超时
                 SocketUtil.sendPackageData(socket,b);
                 byte resp = SocketUtil.receive(socket);
+                timer1.cancel();// 关闭计时器
                 if (resp == 0){
                     handler.sendEmptyMessage(DEVICESTATE);
                 }
@@ -325,11 +331,9 @@ public class SendUtil {
                 timer1.cancel();
                 handler.sendEmptyMessage(IO_ERROR);
             }
-            timer1.cancel();// 关闭计时器
             if(!flag) {
                 return;
             }
-
         }
     }
 
